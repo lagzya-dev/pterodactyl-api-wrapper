@@ -1,0 +1,45 @@
+{
+  "name": "pterodactyl-api-wrapper",
+  "version": "1.0.0",
+  "main": "dist/index.js",
+  "scripts": {
+    "build": "tsup",
+    "prepublishOnly": "npm run build",
+    "start": "node dist/index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/cptcr/pterodactyl-api-wrapper.git"
+  },
+  "keywords": [
+    "pterodactyl",
+    "api",
+    "wrapper",
+    "typescript",
+    "types",
+    "javascript",
+    "github",
+    "advanced"
+  ],
+  "license": "Apache-2.0",
+  "bugs": {
+    "url": "https://github.com/cptcr/pterodactyl-api-wrapper/issues"
+  },
+  "homepage": "https://github.com/cptcr/pterodactyl-api-wrapper#readme",
+  "author": "cptcr",
+  "description": "",
+  "dependencies": {
+    "@types/axios": "^0.9.36",
+    "axios": "^1.7.9"
+  },
+  "devDependencies": {
+    "@types/typescript": "^0.4.29",
+    "tsup": "^8.3.6",
+    "types": "^0.1.1",
+    "typescript": "^5.7.3"
+  },
+  "files": [
+    "dist",
+    "src"
+  ]
+}

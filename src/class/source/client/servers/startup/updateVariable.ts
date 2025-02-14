@@ -1,0 +1,30 @@
+import ClientAPICall from "../../../../../functions/createAppCall";
+
+/**
+ * Updates a startup variable for a specific server.
+ *
+ * @param {Object} options - API call options.
+ * @param {string} options.apiKey - The API key for authentication.
+ * @param {string} options.panel - The base URL of the Pterodactyl panel.
+ * @param {string} options.server_id - The ID of the server.
+ * @param {number} options.variable_id - The ID of the startup variable.
+ * @param {string} options.value - The new value for the variable.
+ * @returns {Promise<any>} - API response confirming variable update.
+ *
+ * @throws {Error} - Throws an error if the API request fails.
+ */
+export default async function updateVariable(options: { 
+    apiKey: string; 
+    panel: string; 
+    server_id: string;
+    variable_id: number;
+    value: string;
+}): Promise<any> {
+    return ClientAPICall({
+        apiKey: options.apiKey,
+        panel: options.panel,
+        method: "PUT",
+        endpoint: `servers/${options.server_id}/startup/variables/${options.variable_id}`,
+        body: JSON.stringify({ value: options.value })
+    });
+}
