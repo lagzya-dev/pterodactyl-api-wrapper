@@ -11,8 +11,13 @@ import deleteApiKey from "../source/client/account/deleteApiKey";
 import listApiKeys from "../source/client/account/listApiKeys";
 
 // Import server functions
-import listServers from "../source/client/servers/listServers";
-import showPermissions from "../source/client/servers/showPermissions";
+import listServers from "../source/client/listServers";
+import showPermissions from "../source/client/showPermissions";
+import command from "../source/client/servers/command";
+import power from "../source/client/servers/power";
+import consoleDetails from "../source/client/servers/consoleDetails";
+import resources from "../source/client/servers/resources";
+import serverDetails from "../source/client/servers/serverDetails";
 
 // Import file management functions
 import listFiles from "../source/client/servers/files/listFiles";
@@ -27,15 +32,19 @@ import deleteFile from "../source/client/servers/files/deleteFile";
 import createFolder from "../source/client/servers/files/createFolder";
 import uploadFile from "../source/client/servers/files/uploadFile";
 
+// Import schedule functions
+import listSchedules from "../source/client/servers/schedules/listSchedules";
+import createSchedule from "../source/client/servers/schedules/createSchedule";
+import scheduleDetails from "../source/client/servers/schedules/scheduleDetails";
+import updateSchedule from "../source/client/servers/schedules/updateSchedule";
+import deleteSchedule from "../source/client/servers/schedules/deleteSchedule";
+import createTask from "../source/client/servers/schedules/createTask";
+import updateTask from "../source/client/servers/schedules/updateTask";
+import deleteTask from "../source/client/servers/schedules/deleteTask";
+
 /**
- * The `Client` class provides an interface for interacting with the Pterodactyl Client API.
- * It contains multiple functions allowing users to manage accounts, servers, files, networks, schedules, and more.
- *
- * Usage:
- * ```ts
- * const client = new Client("YOUR_API_KEY");
- * const accountDetails = await client.account.getDetails();
- * ```
+ * The Client class provides an interface for interacting with the Pterodactyl Client API.
+ * It supports account management, server management (including commands, power actions, files, network, schedules, and server resources).
  */
 export default class Client {
     private apiKey: string;
@@ -55,18 +64,23 @@ export default class Client {
         updatePassword: (current_password: string, new_password: string) => updatePassword({ apiKey: this.apiKey, panel: this.panel, current_password, new_password }),
         createApiKey: (description: string, allowed_ips: string[]) => createApiKey({ apiKey: this.apiKey, panel: this.panel, description, allowed_ips }),
         deleteApiKey: (key_id: string) => deleteApiKey({ apiKey: this.apiKey, panel: this.panel, key_id }),
-        listApiKeys: () => listApiKeys({ apiKey: this.apiKey, panel: this.panel })
+        listApiKeys: () => listApiKeys({ apiKey: this.apiKey, panel: this.panel }),
     };
 
     /** Server Management */
     public servers = {
         list: () => listServers({ apiKey: this.apiKey, panel: this.panel }),
-        showPermissions: (server_id: string) => showPermissions({ apiKey: this.apiKey, panel: this.panel, server_id })
+        showPermissions: (server_id: string) => showPermissions({ apiKey: this.apiKey, panel: this.panel, server_id }),
+        sendCommand: (server_id: string, commandStr: string) => command({ apiKey: this.apiKey, panel: this.panel, server_id, command: commandStr }),
+        powerAction: (server_id: string, signal: "start" | "stop" | "restart" | "kill") => power({ apiKey: this.apiKey, panel: this.panel, server_id, signal }),
+        getConsoleDetails: (server_id: string) => consoleDetails({ apiKey: this.apiKey, panel: this.panel, server_id }),
+        getResources: (server_id: string) => resources({ apiKey: this.apiKey, panel: this.panel, server_id }),
+        getDetails: (server_id: string) => serverDetails({ apiKey: this.apiKey, panel: this.panel, server_id }),
     };
 
     /** File Management */
     public files = {
-        list: (server_id: string) => listFiles({ apiKey: this.apiKey, panel: this.panel, server_id }),
+        list: (server_id: string, directory?: string) => listFiles({ apiKey: this.apiKey, panel: this.panel, server_id, directory }),
         getContent: (server_id: string, file_path: string) => getFileContent({ apiKey: this.apiKey, panel: this.panel, server_id, file_path }),
         download: (server_id: string, file_path: string) => downloadFile({ apiKey: this.apiKey, panel: this.panel, server_id, file_path }),
         rename: (server_id: string, from: string, to: string) => renameFile({ apiKey: this.apiKey, panel: this.panel, server_id, files: [{ from, to }] }),
@@ -76,6 +90,18 @@ export default class Client {
         decompress: (server_id: string, file_path: string) => decompressFile({ apiKey: this.apiKey, panel: this.panel, server_id, file_path }),
         delete: (server_id: string, files: string[]) => deleteFile({ apiKey: this.apiKey, panel: this.panel, server_id, files }),
         createFolder: (server_id: string, folder_path: string) => createFolder({ apiKey: this.apiKey, panel: this.panel, server_id, folder_path }),
-        upload: (server_id: string, file_data: FormData) => uploadFile({ apiKey: this.apiKey, panel: this.panel, server_id, file_data })
+        upload: (server_id: string, file_data: FormData) => uploadFile({ apiKey: this.apiKey, panel: this.panel, server_id, file_data }),
+    };
+
+    /** Schedule Management */
+    public schedules = {
+        list: (server_id: string) => listSchedules({ apiKey: this.apiKey, panel: this.panel, server_id }),
+        createSchedule: (server_id: string, schedule_data: any) => createSchedule({ apiKey: this.apiKey, panel: this.panel, server_id, schedule_data }),
+        scheduleDetails: (server_id: string, schedule_id: string) => scheduleDetails({ apiKey: this.apiKey, panel: this.panel, server_id, schedule_id }),
+        updateSchedule: (server_id: string, schedule_id: string, schedule_data: any) => updateSchedule({ apiKey: this.apiKey, panel: this.panel, server_id, schedule_id, schedule_data }),
+        deleteSchedule: (server_id: string, schedule_id: string) => deleteSchedule({ apiKey: this.apiKey, panel: this.panel, server_id, schedule_id }),
+        createTask: (server_id: string, schedule_id: string, task_data: any) => createTask({ apiKey: this.apiKey, panel: this.panel, server_id, schedule_id, task_data }),
+        updateTask: (server_id: string, schedule_id: string, task_id: string, task_data: any) => updateTask({ apiKey: this.apiKey, panel: this.panel, server_id, schedule_id, task_id, task_data }),
+        deleteTask: (server_id: string, schedule_id: string, task_id: string) => deleteTask({ apiKey: this.apiKey, panel: this.panel, server_id, schedule_id, task_id }),
     };
 }

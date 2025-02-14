@@ -1,4 +1,4 @@
-import ClientAPICall from "../../../../functions/createAppCall";
+import ClientAPICall from "../../../functions/createAppCall";
 
 /**
  * Retrieves the permissions the authenticated user has for a specific server.

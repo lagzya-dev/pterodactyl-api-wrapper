@@ -1,31 +1,30 @@
 /**
- * The `Setup` class provides a way to configure the panel URL globally.
- * Users can set their panel URL once and use it across multiple API calls without needing to specify it repeatedly.
+ * The Setup class provides a way to configure global settings for the Pterodactyl API Wrapper.
+ * The primary use is to set the panel URL, which is then used in all API requests.
  *
- * Usage:
- * ```ts
+ * @example
  * Setup.setPanel("https://panel.example.com");
- * const panel = Setup.getPanel();
- * ```
+ * const panelUrl = Setup.getPanel();
  */
 export default class Setup {
     private static panelUrl: string;
 
     /**
-     * Sets the global panel URL for API requests.
-     * @param {string} url - The URL of the Pterodactyl panel.
+     * Sets the global panel URL.
+     * @param url - The URL of the Pterodactyl panel.
      */
     public static setPanel(url: string): void {
         this.panelUrl = url;
     }
 
     /**
-     * Retrieves the globally set panel URL.
-     * @returns {string} The panel URL.
+     * Gets the globally set panel URL.
+     * @returns The panel URL.
+     * @throws If the panel URL has not been set.
      */
     public static getPanel(): string {
         if (!this.panelUrl) {
-            throw new Error("Panel URL is not set. Use `Setup.setPanel(url)` before making requests.");
+            throw new Error("Panel URL is not set. Use Setup.setPanel(url) before making API calls.");
         }
         return this.panelUrl;
     }

@@ -49,6 +49,7 @@ Setup.setPanel("https://panel.example.com");
 ---
 
 ## Classes Overview
+**NOTE:** Not all functions are included within this guide, but i can guarantee that every API endpoint from the pterodactyl API is handled within the NPM and its classes.
 
 ### Setup Class
 

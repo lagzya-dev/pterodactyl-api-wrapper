@@ -1,4 +1,4 @@
-import ClientAPICall from "../../../../functions/createAppCall";
+import ClientAPICall from "../../../functions/createAppCall";
 
 /**
  * Retrieves a list of all servers the authenticated user has access to.
