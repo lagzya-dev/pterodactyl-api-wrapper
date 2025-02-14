@@ -1,83 +1,178 @@
 # Pterodactyl API Wrapper
 
-[![NPM version](https://img.shields.io/npm/v/pterodactyl-api-wrapper.svg)](https://npmjs.com/package/pterodactyl-api-wrapper)
-[![License](https://img.shields.io/npm/l/pterodactyl-api-wrapper.svg)](LICENSE)
+[![NPM version](https://img.shields.io/npm/v/pterodactyl-api-wrapper.svg)](https://npmjs.com/package/pterodactyl-api-wrapper)  
+[![License](https://img.shields.io/npm/l/pterodactyl-api-wrapper.svg)](LICENSE)  
 
-A fully-featured Node.js API wrapper for the [Pterodactyl](https://pterodactyl.io/) panel. This package provides an easy-to-use interface for both the **Client API** and **Application API** of your Pterodactyl panel, allowing you to manage users, servers, nodes, locations, databases, files, and more directly from your Node.js projects.
+Pterodactyl API Wrapper is a **fully-featured Node.js library** designed to interact with the [Pterodactyl](https://pterodactyl.io/) panel. This package provides access to both the **Client API** (user interactions) and **Application API** (administrative control), allowing full management of users, servers, nodes, and files.
 
-## Features
+---
 
-- **Client API Functions**:
-  - Manage your account (2FA, API keys, email, password updates, etc.)
-  - Manage your servers (list servers, view permissions, file management, network settings, schedules, startup variables, and user assignments)
-- **Application API Functions**:
-  - Administrative control over the panel (user, node, location, server, and nest management)
-- **Global Setup**:
-  - Easily set your panel URL globally using the `Setup` class.
-- **TypeScript Support**:
-  - Written in TypeScript for full type-safety and IntelliSense support.
+## Table of Contents
+
+- [Installation](#installation)
+- [Setup](#setup)
+- [Classes Overview](#classes-overview)
+  - [Setup Class](#setup-class)
+  - [Client Class](#client-class)
+  - [Application Class](#application-class)
+- [API Reference](#api-reference)
+  - [Client API Functions](#client-api-functions)
+  - [Application API Functions](#application-api-functions)
+- [Project Structure](#project-structure)
+- [License](#license)
+- [Author](#author)
+- [Contributing](#contributing)
+- [Support](#support)
+
+---
 
 ## Installation
 
-Install the package via NPM:
+Install the package via npm:
 
 ```bash
 npm install pterodactyl-api-wrapper
 ```
 
-## Usage
+---
 
-### Setup
+## Setup
 
-Before making any API calls, set your panel URL globally using the `Setup` class:
+Before making API calls, **set the panel URL globally** using the `Setup` class:
 
 ```typescript
-import { Setup } from 'pterodactyl-api-wrapper';
+import { Setup } from "pterodactyl-api-wrapper";
 
 Setup.setPanel("https://panel.example.com");
 ```
 
-### Client API Example
+---
 
-The Client API is designed for user-level interactions with your Pterodactyl panel.
+## Classes Overview
 
-```typescript
-import { Client } from 'pterodactyl-api-wrapper';
+### Setup Class
 
-const client = new Client("YOUR_API_KEY");
+The `Setup` class is responsible for managing the global panel configuration.
 
-async function getAccountDetails() {
-    try {
-        const details = await client.account.getDetails();
-        console.log("Account Details:", details);
-    } catch (error) {
-        console.error("Error fetching account details:", error);
-    }
-}
+| Method | Description |
+|--------|-------------|
+| `Setup.setPanel(url: string): void` | Sets the global panel URL. |
+| `Setup.getPanel(): string` | Retrieves the configured panel URL. |
 
-getAccountDetails();
-```
+---
 
-### Application API Example
+### Client Class
 
-The Application API is for administrative control of the panel.
+The `Client` class provides an interface for interacting with the **Client API**, typically for user-level actions.
+
+#### Example Usage:
 
 ```typescript
-import { Application } from 'pterodactyl-api-wrapper';
+import { Client } from "pterodactyl-api-wrapper";
 
-const app = new Application("YOUR_API_KEY");
+const client = new Client("YOUR_CLIENT_API_KEY");
 
-async function listUsers() {
-    try {
-        const users = await app.users.list();
-        console.log("Users:", users);
-    } catch (error) {
-        console.error("Error fetching users:", error);
-    }
-}
-
-listUsers();
+// Get account details
+const details = await client.account.getDetails();
+console.log(details);
 ```
+
+---
+
+### Application Class
+
+The `Application` class is used for **administrative control**, such as managing users, servers, and nodes.
+
+#### Example Usage:
+
+```typescript
+import { Application } from "pterodactyl-api-wrapper";
+
+const app = new Application("YOUR_APPLICATION_API_KEY");
+
+// List all users
+const users = await app.users.list();
+console.log(users);
+```
+
+---
+
+## API Reference
+
+### Client API Functions
+
+#### Account Management
+
+| Method | Description |
+|--------|-------------|
+| `client.account.getDetails()` | Retrieves the authenticated user's account details. |
+| `client.account.enable2FA(codes: string[])` | Enables two-factor authentication (2FA). |
+| `client.account.disable2FA(tokens: string[])` | Disables 2FA using recovery tokens. |
+| `client.account.updateEmail(email: string, password: string)` | Updates the email address. |
+| `client.account.updatePassword(current_password: string, new_password: string)` | Changes the account password. |
+| `client.account.createApiKey(description: string, allowed_ips: string[])` | Creates a new API key. |
+| `client.account.deleteApiKey(key_id: string)` | Deletes an existing API key. |
+| `client.account.listApiKeys()` | Lists all API keys. |
+
+#### Server Management
+
+| Method | Description |
+|--------|-------------|
+| `client.servers.list()` | Lists all accessible servers. |
+| `client.servers.showPermissions(server_id: string)` | Retrieves permissions for a specific server. |
+
+#### File Management
+
+| Method | Description |
+|--------|-------------|
+| `client.files.list(server_id: string)` | Lists files in a server. |
+| `client.files.getContent(server_id: string, file_path: string)` | Reads the content of a file. |
+| `client.files.download(server_id: string, file_path: string)` | Generates a download link for a file. |
+| `client.files.rename(server_id: string, from: string, to: string)` | Renames a file or folder. |
+| `client.files.copy(server_id: string, file_path: string)` | Copies a file. |
+| `client.files.write(server_id: string, file_path: string, content: string)` | Writes to a file. |
+| `client.files.compress(server_id: string, files: string[])` | Compresses files into a ZIP. |
+| `client.files.decompress(server_id: string, file_path: string)` | Extracts a ZIP file. |
+| `client.files.delete(server_id: string, files: string[])` | Deletes files or folders. |
+| `client.files.createFolder(server_id: string, folder_path: string)` | Creates a new folder. |
+| `client.files.upload(server_id: string, file_data: FormData)` | Uploads a file to the server. |
+
+---
+
+### Application API Functions
+
+#### User Management
+
+| Method | Description |
+|--------|-------------|
+| `app.users.list()` | Lists all users. |
+| `app.users.getDetails(user_id: string)` | Gets details for a specific user. |
+| `app.users.getDetailsByExternalId(external_id: string)` | Retrieves user details using an external identifier. |
+| `app.users.create(user_details: object)` | Creates a new user. |
+| `app.users.update(user_id: string, user_data: object)` | Updates an existing user's information. |
+| `app.users.delete(user_id: string)` | Deletes a user. |
+
+#### Node Management
+
+| Method | Description |
+|--------|-------------|
+| `app.nodes.list()` | Lists all nodes. |
+| `app.nodes.getDetails(node_id: string)` | Retrieves details of a node. |
+| `app.nodes.create(node_data: object)` | Creates a new node. |
+| `app.nodes.update(node_id: string, node_data: object)` | Updates an existing node. |
+| `app.nodes.delete(node_id: string)` | Deletes a node. |
+
+#### Server Management
+
+| Method | Description |
+|--------|-------------|
+| `app.servers.list()` | Lists all servers. |
+| `app.servers.getDetails(server_id: string)` | Retrieves details of a server. |
+| `app.servers.create(server_data: object)` | Creates a new server. |
+| `app.servers.update(server_id: string, update_data: object)` | Updates server details. |
+| `app.servers.delete(server_id: string)` | Deletes a server. |
+
+---
 
 ## Project Structure
 
@@ -85,35 +180,40 @@ listUsers();
 src/
 └── class/
     ├── main/
-    │   ├── Application.ts       // Main class for Application API functions.
-    │   ├── Client.ts            // Main class for Client API functions.
-    │   └── Setup.ts             // Global configuration class.
+    │   ├── Application.ts       // Main Application API class
+    │   ├── Client.ts            // Main Client API class
+    │   ├── Setup.ts             // Configuration class
     └── source/
-        ├── app/                 // Application API implementations.
-        │   ├── users/           // User management functions.
-        │   ├── nodes/           // Node management functions.
-        │   ├── locations/       // Location management functions.
-        │   ├── servers/         // Server management functions.
-        │   └── nests/           // Nest & Egg management functions.
-        └── client/              // Client API implementations.
-            ├── account/         // Account management functions.
-            └── servers/         // Server management functions (files, network, schedules, settings, startup, users, backups, etc.)
+        ├── app/                 // Application API (Admin)
+        │   ├── users/
+        │   ├── nodes/
+        │   ├── locations/
+        │   ├── servers/
+        │   └── nests/
+        └── client/              // Client API (User)
+            ├── account/
+            └── servers/
 ```
 
-Each function is implemented in its own file, and all are grouped by category. The `Client.ts` and `Application.ts` classes import these functions directly, providing a clean and intuitive API.
+---
 
 ## License
 
-This project is licensed under the **Apache 2.0 License**. See the [LICENSE](LICENSE) file for details.
+This project is licensed under the [Apache 2.0 License](LICENSE).
 
 ## Author
 
-**cptcr**
+Developed by **cptcr**. <br>
+This project is **NOT** affiliated or partnered with https://pterodactyl.io or Dane Everitt and contributors. <br>
+To learn more about Pterodactyl you can visit these links: <br>
+<li>Website: https://pterodactyl.io</li>
+<li>GitHub: https://github.com/pterodactyl</li>
+<li>API Documentation: https://dashflo.net/docs/api/pterodactyl/v1/</li>
 
 ## Contributing
 
-Contributions are welcome! Please open an issue or submit a pull request if you find bugs, have improvements, or new feature requests.
+Contributions are welcome. Open an issue or submit a pull request.
 
 ## Support
 
-If you have any questions or need help, please feel free to open an issue on the [GitHub repository](https://github.com/cptcr/pterodactyl-api-wrapper) or reach out via email.
+For help, open an issue on [GitHub](https://github.com/cptcr/pterodactyl-api-wrapper/issues).
