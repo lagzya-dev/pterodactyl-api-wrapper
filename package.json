@@ -1,11 +1,17 @@
 {
-  "name": "pterodactyl-api-wrapper",
+  "name": "@cptcr/pterodactyl-api-wrapper",
   "version": "2.0.4",
   "main": "dist/index.js",
+  "types": "dist/index.d.ts",
   "scripts": {
     "build": "tsup",
     "prepublishOnly": "npm run build",
-    "start": "node dist/index.js"
+    "start": "node dist/index.js",
+    "publish:npm": "npm publish --access public",
+    "publish:github": "node scripts/set-github.js && npm publish --registry=https://npm.pkg.github.com && node scripts/reset-name.js"
+  },
+  "publishConfig": {
+    "access": "public"
   },
   "repository": {
     "type": "git",
