@@ -5,6 +5,12 @@
 
 Pterodactyl API Wrapper is a **fully-featured Node.js library** designed to interact with the [Pterodactyl](https://pterodactyl.io/) panel. This package provides access to both the **Client API** (user interactions) and **Application API** (administrative control), allowing full management of users, servers, nodes, and files.
 
+Read full Documentation:
+<li>Installation: https://cptcr.featurebase.app/en/help/articles/0607206-installation-and-setup</li>
+<li>Application Class: https://cptcr.featurebase.app/en/help/articles/5154163-application-class</li>
+<li>Client Class: https://cptcr.featurebase.app/en/help/articles/1119802-client-class</li>
+<li>Setup Class: https://cptcr.featurebase.app/en/help/articles/1198926-setup-class</li>
+
 ---
 
 ## Table of Contents
