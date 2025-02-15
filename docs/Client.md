@@ -1,5 +1,3 @@
-# Pterodactyl Client Class Documentation
-
 ## Overview
 The `Client` class provides an interface for interacting with the Pterodactyl Client API. It supports **account management, server control, file operations, backups, networking, schedules, settings, startup variables, and more**.
 
