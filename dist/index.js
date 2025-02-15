@@ -414,6 +414,57 @@ async function forceDeleteServer(options) {
   });
 }
 
+// src/class/source/app/servers/databases/listDatabases.ts
+async function listDatabases(options) {
+  return ApplicationAPICall({
+    apiKey: options.apiKey,
+    panel: options.panel,
+    method: "GET",
+    endpoint: `servers/${options.server_id}/databases`
+  });
+}
+
+// src/class/source/app/servers/databases/databaseDetails.ts
+async function databaseDetails(options) {
+  return ApplicationAPICall({
+    apiKey: options.apiKey,
+    panel: options.panel,
+    method: "GET",
+    endpoint: `servers/${options.server_id}/databases/${options.database_id}`
+  });
+}
+
+// src/class/source/app/servers/databases/createDatabase.ts
+async function createDatabase(options) {
+  return ApplicationAPICall({
+    apiKey: options.apiKey,
+    panel: options.panel,
+    method: "POST",
+    endpoint: `servers/${options.server_id}/databases`,
+    body: JSON.stringify(options.database_data)
+  });
+}
+
+// src/class/source/app/servers/databases/resetDatabasePassword.ts
+async function resetDatabasePassword(options) {
+  return ApplicationAPICall({
+    apiKey: options.apiKey,
+    panel: options.panel,
+    method: "POST",
+    endpoint: `servers/${options.server_id}/databases/${options.database_id}/reset-password`
+  });
+}
+
+// src/class/source/app/servers/databases/deleteDatabase.ts
+async function deleteDatabase(options) {
+  return ApplicationAPICall({
+    apiKey: options.apiKey,
+    panel: options.panel,
+    method: "DELETE",
+    endpoint: `servers/${options.server_id}/databases/${options.database_id}`
+  });
+}
+
 // src/class/source/app/nests/eggs/listEggs.ts
 async function listEggs(options) {
   return ApplicationAPICall({
@@ -451,6 +502,40 @@ async function nestDetails(options) {
     panel: options.panel,
     method: "GET",
     endpoint: `nests/${options.nest_id}`
+  });
+}
+
+// src/class/source/app/nodes/allocations/listAllocations.ts
+async function listAllocations(options) {
+  return ApplicationAPICall({
+    apiKey: options.apiKey,
+    panel: options.panel,
+    method: "GET",
+    endpoint: `nodes/${options.node_id}/allocations`
+  });
+}
+
+// src/class/source/app/nodes/allocations/createAllocations.ts
+async function createAllocation(options) {
+  return ApplicationAPICall({
+    apiKey: options.apiKey,
+    panel: options.panel,
+    method: "POST",
+    endpoint: `nodes/${options.node_id}/allocations`,
+    body: JSON.stringify({
+      ip: options.ip,
+      ports: options.ports
+    })
+  });
+}
+
+// src/class/source/app/nodes/allocations/deleteAllocation.ts
+async function deleteAllocation(options) {
+  return ApplicationAPICall({
+    apiKey: options.apiKey,
+    panel: options.panel,
+    method: "DELETE",
+    endpoint: `nodes/${options.node_id}/allocations/${options.allocation_id}`
   });
 }
 
@@ -504,6 +589,20 @@ var Application = class {
       getNestDetails: (nest_id) => nestDetails({ apiKey: this.apiKey, panel: this.panel, nest_id: parseInt(nest_id) }),
       listEggs: (nest_id) => listEggs({ apiKey: this.apiKey, panel: this.panel, nest_id: parseInt(nest_id) }),
       getEggDetails: (nest_id, egg_id) => eggDetails({ apiKey: this.apiKey, panel: this.panel, nest_id: parseInt(nest_id), egg_id: parseInt(egg_id) })
+    };
+    /** Allocations Management */
+    this.allocations = {
+      list: (node_id) => listAllocations({ apiKey: this.apiKey, panel: this.panel, node_id: parseInt(node_id) }),
+      create: (node_id, ip, ports) => createAllocation({ apiKey: this.apiKey, panel: this.panel, node_id: parseInt(node_id), ip, ports }),
+      delete: (node_id, allocation_id) => deleteAllocation({ apiKey: this.apiKey, panel: this.panel, node_id: parseInt(node_id), allocation_id: parseInt(allocation_id) })
+    };
+    /** Database Management */
+    this.databases = {
+      list: (server_id) => listDatabases({ apiKey: this.apiKey, panel: this.panel, server_id }),
+      getDetails: (server_id, database_id) => databaseDetails({ apiKey: this.apiKey, panel: this.panel, server_id, database_id: parseInt(database_id) }),
+      create: (server_id, database_data) => createDatabase({ apiKey: this.apiKey, panel: this.panel, server_id, database_data }),
+      resetPassword: (server_id, database_id) => resetDatabasePassword({ apiKey: this.apiKey, panel: this.panel, server_id, database_id: parseInt(database_id) }),
+      delete: (server_id, database_id) => deleteDatabase({ apiKey: this.apiKey, panel: this.panel, server_id, database_id: parseInt(database_id) })
     };
     this.apiKey = apiKey;
     this.panel = Setup.getPanel();
@@ -701,6 +800,57 @@ async function serverDetails2(options) {
   return await response.json();
 }
 
+// src/class/source/client/servers/backups/listBackups.ts
+async function listBackups(options) {
+  return ApplicationAPICall({
+    apiKey: options.apiKey,
+    panel: options.panel,
+    method: "GET",
+    endpoint: `servers/${options.server_id}/backups`
+  });
+}
+
+// src/class/source/client/servers/backups/backupDetails.ts
+async function backupDetails(options) {
+  return ApplicationAPICall({
+    apiKey: options.apiKey,
+    panel: options.panel,
+    method: "GET",
+    endpoint: `servers/${options.server_id}/backups/${options.backup_id}`
+  });
+}
+
+// src/class/source/client/servers/backups/createBackup.ts
+async function createBackup(options) {
+  return ApplicationAPICall({
+    apiKey: options.apiKey,
+    panel: options.panel,
+    method: "POST",
+    endpoint: `servers/${options.server_id}/backups`,
+    body: options.backup_data ? JSON.stringify(options.backup_data) : void 0
+  });
+}
+
+// src/class/source/client/servers/backups/deleteBackup.ts
+async function deleteBackup(options) {
+  return ApplicationAPICall({
+    apiKey: options.apiKey,
+    panel: options.panel,
+    method: "DELETE",
+    endpoint: `servers/${options.server_id}/backups/${options.backup_id}`
+  });
+}
+
+// src/class/source/client/servers/backups/downloadBackup.ts
+async function downloadBackup(options) {
+  return ApplicationAPICall({
+    apiKey: options.apiKey,
+    panel: options.panel,
+    method: "GET",
+    endpoint: `servers/${options.server_id}/backups/${options.backup_id}/download`
+  });
+}
+
 // src/class/source/client/servers/files/listFiles.ts
 async function listFiles(options) {
   return ApplicationAPICall({
@@ -819,6 +969,58 @@ async function uploadFile(options) {
       "Authorization": `Bearer ${options.apiKey}`,
       "Content-Type": "multipart/form-data"
     }
+  });
+}
+
+// src/class/source/client/servers/network/listAllocations.ts
+async function listAllocations2(options) {
+  return ApplicationAPICall({
+    apiKey: options.apiKey,
+    panel: options.panel,
+    method: "GET",
+    endpoint: `servers/${options.server_id}/network/allocations`
+  });
+}
+
+// src/class/source/client/servers/network/assignAllocations.ts
+async function assignAllocations(options) {
+  return ApplicationAPICall({
+    apiKey: options.apiKey,
+    panel: options.panel,
+    method: "POST",
+    endpoint: `servers/${options.server_id}/network/allocations`,
+    body: JSON.stringify({ allocation_id: options.allocation_id })
+  });
+}
+
+// src/class/source/client/servers/network/setAllocationNote.ts
+async function setAllocationNote(options) {
+  return ApplicationAPICall({
+    apiKey: options.apiKey,
+    panel: options.panel,
+    method: "PUT",
+    endpoint: `servers/${options.server_id}/network/allocations/${options.allocation_id}`,
+    body: JSON.stringify({ notes: options.note })
+  });
+}
+
+// src/class/source/client/servers/network/setPrimaryAllocation.ts
+async function setPrimaryAllocation(options) {
+  return ApplicationAPICall({
+    apiKey: options.apiKey,
+    panel: options.panel,
+    method: "POST",
+    endpoint: `servers/${options.server_id}/network/allocations/${options.allocation_id}/primary`
+  });
+}
+
+// src/class/source/client/servers/network/unassignAllocation.ts
+async function unassignAllocation(options) {
+  return ApplicationAPICall({
+    apiKey: options.apiKey,
+    panel: options.panel,
+    method: "DELETE",
+    endpoint: `servers/${options.server_id}/network/allocations/${options.allocation_id}`
   });
 }
 
@@ -949,6 +1151,104 @@ async function deleteTask(options) {
   }
 }
 
+// src/class/source/client/servers/settings/renameServer.ts
+async function renameServer(options) {
+  return ApplicationAPICall({
+    apiKey: options.apiKey,
+    panel: options.panel,
+    method: "PATCH",
+    endpoint: `servers/${options.server_id}/settings/rename`,
+    body: JSON.stringify({ name: options.new_name })
+  });
+}
+
+// src/class/source/client/servers/settings/reinstallServer.ts
+async function reinstallServer2(options) {
+  return ApplicationAPICall({
+    apiKey: options.apiKey,
+    panel: options.panel,
+    method: "POST",
+    endpoint: `servers/${options.server_id}/settings/reinstall`
+  });
+}
+
+// src/class/source/client/servers/startup/listVariables.ts
+async function listVariables(options) {
+  return ApplicationAPICall({
+    apiKey: options.apiKey,
+    panel: options.panel,
+    method: "GET",
+    endpoint: `servers/${options.server_id}/startup/variables`
+  });
+}
+
+// src/class/source/client/servers/startup/updateVariable.ts
+async function updateVariable(options) {
+  return ApplicationAPICall({
+    apiKey: options.apiKey,
+    panel: options.panel,
+    method: "PUT",
+    endpoint: `servers/${options.server_id}/startup/variables/${options.variable_id}`,
+    body: JSON.stringify({ value: options.value })
+  });
+}
+
+// src/class/source/client/servers/users/listUsers.ts
+async function listUsers2(options) {
+  return ApplicationAPICall({
+    apiKey: options.apiKey,
+    panel: options.panel,
+    method: "GET",
+    endpoint: `servers/${options.server_id}/users`
+  });
+}
+
+// src/class/source/client/servers/users/createUser.ts
+async function createUser2(options) {
+  return ApplicationAPICall({
+    apiKey: options.apiKey,
+    panel: options.panel,
+    method: "POST",
+    endpoint: `servers/${options.server_id}/users`,
+    body: JSON.stringify({
+      email: options.email,
+      username: options.username,
+      permissions: options.permissions
+    })
+  });
+}
+
+// src/class/source/client/servers/users/updateUser.ts
+async function updateUser2(options) {
+  return ApplicationAPICall({
+    apiKey: options.apiKey,
+    panel: options.panel,
+    method: "PUT",
+    endpoint: `servers/${options.server_id}/users/${options.user_id}`,
+    body: JSON.stringify({ permissions: options.permissions })
+  });
+}
+
+// src/class/source/client/servers/users/deleteUser.ts
+async function deleteUser2(options) {
+  return ApplicationAPICall({
+    apiKey: options.apiKey,
+    panel: options.panel,
+    method: "DELETE",
+    endpoint: `servers/${options.server_id}/users/${options.user_id}`
+  });
+}
+
+// src/class/source/client/servers/users/userDetails.ts
+async function userDetails2(options) {
+  return ApplicationAPICall({
+    apiKey: options.apiKey,
+    panel: options.panel,
+    method: "GET",
+    endpoint: `servers/${options.server_id}/users/${options.user_id}`
+  });
+}
+
 // src/class/main/Client.ts
 var Client = class {
   constructor(apiKey) {
@@ -973,6 +1273,83 @@ var Client = class {
       getResources: (server_id) => resources({ apiKey: this.apiKey, panel: this.panel, server_id }),
       getDetails: (server_id) => serverDetails2({ apiKey: this.apiKey, panel: this.panel, server_id })
     };
+    /** Backup Management */
+    this.backups = {
+      list: (server_id) => listBackups({ apiKey: this.apiKey, panel: this.panel, server_id }),
+      getDetails: (server_id, backup_id) => backupDetails({ apiKey: this.apiKey, panel: this.panel, server_id, backup_id }),
+      create: (server_id, backup_data) => createBackup({ apiKey: this.apiKey, panel: this.panel, server_id, backup_data }),
+      delete: (server_id, backup_id) => deleteBackup({ apiKey: this.apiKey, panel: this.panel, server_id, backup_id }),
+      download: (server_id, backup_id) => downloadBackup({ apiKey: this.apiKey, panel: this.panel, server_id, backup_id })
+    };
+    /** Settings */
+    this.settings = {
+      renameServer: (server_id, new_name) => renameServer({
+        apiKey: this.apiKey,
+        panel: this.panel,
+        server_id,
+        new_name
+      }),
+      reinstallServer: (server_id) => reinstallServer2({ apiKey: this.apiKey, panel: this.panel, server_id })
+    };
+    /** Network Management */
+    this.network = {
+      listAllocations: (server_id) => listAllocations2({ apiKey: this.apiKey, panel: this.panel, server_id }),
+      assignAllocations: (server_id, allocation_id) => assignAllocations({
+        apiKey: this.apiKey,
+        panel: this.panel,
+        server_id,
+        allocation_id
+      }),
+      setAllocationNote: (server_id, allocation_id, note) => setAllocationNote({
+        apiKey: this.apiKey,
+        panel: this.panel,
+        server_id,
+        allocation_id: parseInt(allocation_id),
+        note
+      }),
+      setPrimaryAllocation: (server_id, allocation_id) => setPrimaryAllocation({
+        apiKey: this.apiKey,
+        panel: this.panel,
+        server_id,
+        allocation_id: parseInt(allocation_id)
+      }),
+      unassignAllocation: (server_id, allocation_id) => unassignAllocation({
+        apiKey: this.apiKey,
+        panel: this.panel,
+        server_id,
+        allocation_id: parseInt(allocation_id)
+      })
+    };
+    /** Schedule Management */
+    this.schedules = {
+      list: (server_id) => listSchedules({ apiKey: this.apiKey, panel: this.panel, server_id }),
+      createSchedule: (server_id, schedule_data) => createSchedule({ apiKey: this.apiKey, panel: this.panel, server_id, schedule_data }),
+      scheduleDetails: (server_id, schedule_id) => scheduleDetails({ apiKey: this.apiKey, panel: this.panel, server_id, schedule_id }),
+      updateSchedule: (server_id, schedule_id, schedule_data) => updateSchedule({ apiKey: this.apiKey, panel: this.panel, server_id, schedule_id, schedule_data }),
+      deleteSchedule: (server_id, schedule_id) => deleteSchedule({ apiKey: this.apiKey, panel: this.panel, server_id, schedule_id }),
+      createTask: (server_id, schedule_id, task_data) => createTask({ apiKey: this.apiKey, panel: this.panel, server_id, schedule_id, task_data }),
+      updateTask: (server_id, schedule_id, task_id, task_data) => updateTask({ apiKey: this.apiKey, panel: this.panel, server_id, schedule_id, task_id, task_data }),
+      deleteTask: (server_id, schedule_id, task_id) => deleteTask({ apiKey: this.apiKey, panel: this.panel, server_id, schedule_id, task_id })
+    };
+    /** Startup Management */
+    this.startup = {
+      listVariables: (server_id) => listVariables({ apiKey: this.apiKey, panel: this.panel, server_id }),
+      updateVariable: (server_id, variable_id, value) => updateVariable({
+        apiKey: this.apiKey,
+        panel: this.panel,
+        server_id,
+        variable_id: parseInt(variable_id),
+        value
+      })
+    };
+    /** User Management */
+    this.users = {
+      listUsers: (server_id) => listUsers2({ apiKey: this.apiKey, panel: this.panel, server_id }),
+      createUser: (server_id, user_data) => createUser2({ apiKey: this.apiKey, panel: this.panel, server_id, ...user_data }),
+      updateUser: (server_id, user_id, user_data) => updateUser2({ apiKey: this.apiKey, panel: this.panel, server_id, user_id, ...user_data }),
+      deleteUser: (server_id, user_id) => deleteUser2({ apiKey: this.apiKey, panel: this.panel, server_id, user_id }),
+      userDetails: (server_id, user_id) => userDetails2({ apiKey: this.apiKey, panel: this.panel, server_id, user_id })
+    };
     /** File Management */
     this.files = {
       list: (server_id, directory) => listFiles({ apiKey: this.apiKey, panel: this.panel, server_id, directory }),
@@ -986,17 +1363,6 @@ var Client = class {
       delete: (server_id, files) => deleteFile({ apiKey: this.apiKey, panel: this.panel, server_id, files }),
       createFolder: (server_id, folder_path) => createFolder({ apiKey: this.apiKey, panel: this.panel, server_id, folder_path }),
       upload: (server_id, file_data) => uploadFile({ apiKey: this.apiKey, panel: this.panel, server_id, file_data })
-    };
-    /** Schedule Management */
-    this.schedules = {
-      list: (server_id) => listSchedules({ apiKey: this.apiKey, panel: this.panel, server_id }),
-      createSchedule: (server_id, schedule_data) => createSchedule({ apiKey: this.apiKey, panel: this.panel, server_id, schedule_data }),
-      scheduleDetails: (server_id, schedule_id) => scheduleDetails({ apiKey: this.apiKey, panel: this.panel, server_id, schedule_id }),
-      updateSchedule: (server_id, schedule_id, schedule_data) => updateSchedule({ apiKey: this.apiKey, panel: this.panel, server_id, schedule_id, schedule_data }),
-      deleteSchedule: (server_id, schedule_id) => deleteSchedule({ apiKey: this.apiKey, panel: this.panel, server_id, schedule_id }),
-      createTask: (server_id, schedule_id, task_data) => createTask({ apiKey: this.apiKey, panel: this.panel, server_id, schedule_id, task_data }),
-      updateTask: (server_id, schedule_id, task_id, task_data) => updateTask({ apiKey: this.apiKey, panel: this.panel, server_id, schedule_id, task_id, task_data }),
-      deleteTask: (server_id, schedule_id, task_id) => deleteTask({ apiKey: this.apiKey, panel: this.panel, server_id, schedule_id, task_id })
     };
     this.apiKey = apiKey;
     this.panel = Setup.getPanel();

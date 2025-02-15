@@ -1,7 +1,7 @@
 /**
  * The Application class provides an interface for interacting with the
  * Pterodactyl Application API. This class gives full control over the panel,
- * including user, node, location, server, and nest management.
+ * including user, node, location, server, database, nest, and allocation management.
  *
  * @example
  * const app = new Application("YOUR_API_KEY");
@@ -67,11 +67,25 @@ declare class Application {
         listEggs: (nest_id: string) => Promise<any>;
         getEggDetails: (nest_id: string, egg_id: string) => Promise<any>;
     };
+    /** Allocations Management */
+    allocations: {
+        list: (node_id: string) => Promise<any>;
+        create: (node_id: string, ip: string, ports: number[]) => Promise<any>;
+        delete: (node_id: string, allocation_id: string) => Promise<any>;
+    };
+    /** Database Management */
+    databases: {
+        list: (server_id: string) => Promise<any>;
+        getDetails: (server_id: string, database_id: string) => Promise<any>;
+        create: (server_id: string, database_data: any) => Promise<any>;
+        resetPassword: (server_id: string, database_id: string) => Promise<any>;
+        delete: (server_id: string, database_id: string) => Promise<any>;
+    };
 }
 
 /**
- * The Client class provides an interface for interacting with the Pterodactyl Client API.
- * It supports account management, server management (including commands, power actions, files, network, schedules, and server resources).
+ * The `Client` class provides an interface for interacting with the Pterodactyl Client API.
+ * It supports **account management, server control, file operations, backups, networking, schedules, settings, startup variables, and more**.
  */
 declare class Client {
     private apiKey;
@@ -98,6 +112,51 @@ declare class Client {
         getResources: (server_id: string) => Promise<any>;
         getDetails: (server_id: string) => Promise<any>;
     };
+    /** Backup Management */
+    backups: {
+        list: (server_id: string) => Promise<any>;
+        getDetails: (server_id: string, backup_id: string) => Promise<any>;
+        create: (server_id: string, backup_data: any) => Promise<any>;
+        delete: (server_id: string, backup_id: string) => Promise<any>;
+        download: (server_id: string, backup_id: string) => Promise<any>;
+    };
+    /** Settings */
+    settings: {
+        renameServer: (server_id: string, new_name: string) => Promise<any>;
+        reinstallServer: (server_id: string) => Promise<any>;
+    };
+    /** Network Management */
+    network: {
+        listAllocations: (server_id: string) => Promise<any>;
+        assignAllocations: (server_id: string, allocation_id: number) => Promise<any>;
+        setAllocationNote: (server_id: string, allocation_id: string, note: string) => Promise<any>;
+        setPrimaryAllocation: (server_id: string, allocation_id: string) => Promise<any>;
+        unassignAllocation: (server_id: string, allocation_id: string) => Promise<any>;
+    };
+    /** Schedule Management */
+    schedules: {
+        list: (server_id: string) => Promise<any>;
+        createSchedule: (server_id: string, schedule_data: any) => Promise<any>;
+        scheduleDetails: (server_id: string, schedule_id: string) => Promise<any>;
+        updateSchedule: (server_id: string, schedule_id: string, schedule_data: any) => Promise<any>;
+        deleteSchedule: (server_id: string, schedule_id: string) => Promise<void>;
+        createTask: (server_id: string, schedule_id: string, task_data: any) => Promise<any>;
+        updateTask: (server_id: string, schedule_id: string, task_id: string, task_data: any) => Promise<any>;
+        deleteTask: (server_id: string, schedule_id: string, task_id: string) => Promise<void>;
+    };
+    /** Startup Management */
+    startup: {
+        listVariables: (server_id: string) => Promise<any>;
+        updateVariable: (server_id: string, variable_id: string, value: string) => Promise<any>;
+    };
+    /** User Management */
+    users: {
+        listUsers: (server_id: string) => Promise<any>;
+        createUser: (server_id: string, user_data: any) => Promise<any>;
+        updateUser: (server_id: string, user_id: string, user_data: any) => Promise<any>;
+        deleteUser: (server_id: string, user_id: string) => Promise<any>;
+        userDetails: (server_id: string, user_id: string) => Promise<any>;
+    };
     /** File Management */
     files: {
         list: (server_id: string, directory?: string) => Promise<any>;
@@ -111,17 +170,6 @@ declare class Client {
         delete: (server_id: string, files: string[]) => Promise<any>;
         createFolder: (server_id: string, folder_path: string) => Promise<any>;
         upload: (server_id: string, file_data: FormData) => Promise<any>;
-    };
-    /** Schedule Management */
-    schedules: {
-        list: (server_id: string) => Promise<any>;
-        createSchedule: (server_id: string, schedule_data: any) => Promise<any>;
-        scheduleDetails: (server_id: string, schedule_id: string) => Promise<any>;
-        updateSchedule: (server_id: string, schedule_id: string, schedule_data: any) => Promise<any>;
-        deleteSchedule: (server_id: string, schedule_id: string) => Promise<void>;
-        createTask: (server_id: string, schedule_id: string, task_data: any) => Promise<any>;
-        updateTask: (server_id: string, schedule_id: string, task_id: string, task_data: any) => Promise<any>;
-        deleteTask: (server_id: string, schedule_id: string, task_id: string) => Promise<void>;
     };
 }
 

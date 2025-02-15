@@ -37,16 +37,28 @@ import reinstallServer from "../source/app/servers/reinstallServer";
 import deleteServer from "../source/app/servers/deleteServer";
 import forceDeleteServer from "../source/app/servers/forceDeleteServer";
 
+// Import Application API - Database Management
+import listDatabases from "../source/app/servers/databases/listDatabases";
+import databaseDetails from "../source/app/servers/databases/databaseDetails";
+import createDatabase from "../source/app/servers/databases/createDatabase";
+import resetDatabasePassword from "../source/app/servers/databases/resetDatabasePassword";
+import deleteDatabase from "../source/app/servers/databases/deleteDatabase";
+
 // Import Application API - Nest & Egg Management
 import listEggs from "../source/app/nests/eggs/listEggs";
 import eggDetails from "../source/app/nests/eggs/eggDetails";
 import listNests from "../source/app/nests/listNests";
 import nestDetails from "../source/app/nests/nestDetails";
 
+// Import Application API - Allocations Management
+import listAllocations from "../source/app/nodes/allocations/listAllocations";
+import createAllocations from "../source/app/nodes/allocations/createAllocations";
+import deleteAllocation from "../source/app/nodes/allocations/deleteAllocation";
+
 /**
  * The Application class provides an interface for interacting with the
  * Pterodactyl Application API. This class gives full control over the panel,
- * including user, node, location, server, and nest management.
+ * including user, node, location, server, database, nest, and allocation management.
  *
  * @example
  * const app = new Application("YOUR_API_KEY");
@@ -141,4 +153,26 @@ export default class Application {
         getEggDetails: (nest_id: string, egg_id: string) =>
             eggDetails({ apiKey: this.apiKey, panel: this.panel, nest_id: parseInt(nest_id), egg_id: parseInt(egg_id) }),
     };
+
+    /** Allocations Management */
+    public allocations = {
+        list: (node_id: string) => listAllocations({ apiKey: this.apiKey, panel: this.panel, node_id: parseInt(node_id) }),
+        create: (node_id: string, ip: string, ports: number[]) => 
+            createAllocations({ apiKey: this.apiKey, panel: this.panel, node_id: parseInt(node_id), ip, ports }),
+        delete: (node_id: string, allocation_id: string) => 
+            deleteAllocation({ apiKey: this.apiKey, panel: this.panel, node_id: parseInt(node_id), allocation_id: parseInt(allocation_id) }),
+    };
+    /** Database Management */
+    public databases = {
+        list: (server_id: string) => listDatabases({ apiKey: this.apiKey, panel: this.panel, server_id }),
+        getDetails: (server_id: string, database_id: string) => 
+            databaseDetails({ apiKey: this.apiKey, panel: this.panel, server_id, database_id: parseInt(database_id) }),
+        create: (server_id: string, database_data: any) => 
+            createDatabase({ apiKey: this.apiKey, panel: this.panel, server_id, database_data }),
+        resetPassword: (server_id: string, database_id: string) => 
+            resetDatabasePassword({ apiKey: this.apiKey, panel: this.panel, server_id, database_id: parseInt(database_id) }),
+        delete: (server_id: string, database_id: string) => 
+            deleteDatabase({ apiKey: this.apiKey, panel: this.panel, server_id, database_id: parseInt(database_id) })
+    };
+
 }
