@@ -1,6 +1,6 @@
 import ApplicationAPICall from "../../../../functions/createAppCall";
 
-interface Response {
+export interface Response {
     debug: boolean,
     uuid: string,
     token_id: string,

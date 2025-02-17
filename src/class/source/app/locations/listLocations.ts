@@ -1,6 +1,6 @@
 import ApplicationAPICall from "../../../../functions/createAppCall";
 
-interface Response {
+export interface Response {
     object: string;
     data: {
       object: string;

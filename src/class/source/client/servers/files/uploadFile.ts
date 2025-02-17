@@ -1,6 +1,6 @@
 import axios from "axios";
 
-interface Response {
+export interface Response {
   object: string;
   attributes: {
     url: string;

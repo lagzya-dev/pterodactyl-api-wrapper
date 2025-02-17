@@ -1,6 +1,6 @@
 import ClientAPICall from "../../../../functions/createAppCall";
 
-interface Response {
+export interface Response {
     data: {
       image_url_data: string;
     };

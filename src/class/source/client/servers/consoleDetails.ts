@@ -1,4 +1,4 @@
-interface Response {
+export interface Response {
     data: {
       token: string;
       socket: string;

@@ -928,12 +928,17 @@ async function createFolder(options) {
 // src/class/source/client/servers/files/uploadFile.ts
 import axios2 from "axios";
 async function uploadFile(options) {
-  return axios2.post(`${options.panel}/api/client/servers/${options.server_id}/files/upload`, options.file_data, {
-    headers: {
-      "Authorization": `Bearer ${options.apiKey}`,
-      "Content-Type": "multipart/form-data"
+  const response = await axios2.post(
+    `${options.panel}/api/client/servers/${options.server_id}/files/upload`,
+    options.file_data,
+    {
+      headers: {
+        "Authorization": `Bearer ${options.apiKey}`,
+        "Content-Type": "multipart/form-data"
+      }
     }
-  });
+  );
+  return response.data;
 }
 
 // src/class/source/client/servers/network/listAllocations.ts
@@ -1333,11 +1338,417 @@ var Client = class {
   }
 };
 
+// src/class/main/WSConnection.ts
+var AdvancedWebSocket = class {
+  constructor(options) {
+    this.socket = null;
+    this.reconnectAttempts = 0;
+    this.messageQueue = [];
+    this.heartbeatIntervalId = null;
+    this.pongTimeoutId = null;
+    this.connectionTimeoutId = null;
+    this.destroyed = false;
+    // Metrics
+    this.messagesSent = 0;
+    this.messagesReceived = 0;
+    this.lastPingTimestamp = 0;
+    this.lastLatency = 0;
+    // Custom event listeners
+    this.eventListeners = {
+      open: [],
+      message: [],
+      close: [],
+      error: [],
+      reconnectAttempt: [],
+      reconnect: [],
+      reconnectSuccess: [],
+      ping: [],
+      pong: [],
+      custom: []
+    };
+    if (!options.url) {
+      throw new Error("A URL is required to establish a WebSocket connection.");
+    }
+    this.options = {
+      autoReconnect: false,
+      reconnectStrategy: "exponential",
+      reconnectInterval: 1e3,
+      maxReconnectAttempts: 10,
+      maxReconnectInterval: 3e4,
+      jitter: 300,
+      connectionTimeout: 1e4,
+      heartbeatInterval: 3e4,
+      heartbeatMessage: "ping",
+      expectedPongMessage: "pong",
+      heartbeatTimeout: 5e3,
+      queueMessages: false,
+      autoJson: false,
+      ...options
+    };
+    this.currentUrl = this.options.url;
+    this.fallbackUrls = this.options.fallbackUrls || [];
+  }
+  /** Internal logger */
+  log(level, ...args) {
+    if (this.options.logger) {
+      this.options.logger(level, ...args);
+    } else {
+      console[level](...args);
+    }
+  }
+  /**
+   * Establishes the WebSocket connection.
+   * Returns a promise that resolves when connected.
+   */
+  connect() {
+    return new Promise((resolve, reject) => {
+      if (this.destroyed) {
+        return reject(new Error("Instance has been destroyed."));
+      }
+      this.log("debug", `[WS] Connecting to ${this.currentUrl}`);
+      this.socket = new WebSocket(this.currentUrl, this.options.protocols);
+      if (this.options.connectionTimeout) {
+        this.connectionTimeoutId = window.setTimeout(() => {
+          this.log("error", "[WS] Connection timeout reached");
+          reject(new Error("Connection timeout reached"));
+          this.socket?.close();
+        }, this.options.connectionTimeout);
+      }
+      this.socket.onopen = (event) => {
+        this.log("info", `[WS] Connected to ${this.currentUrl}`);
+        if (this.connectionTimeoutId) {
+          clearTimeout(this.connectionTimeoutId);
+          this.connectionTimeoutId = null;
+        }
+        this.reconnectAttempts = 0;
+        if (this.options.heartbeatInterval) {
+          this.startHeartbeat();
+        }
+        if (this.options.queueMessages && this.messageQueue.length > 0) {
+          this.flushMessageQueue();
+        }
+        if (this.options.onOpen) this.options.onOpen(event);
+        this.dispatchEvent("open", event);
+        resolve(this.socket);
+      };
+      this.socket.onmessage = (event) => {
+        let data = event.data;
+        if (this.options.incomingMessageInterceptors) {
+          this.options.incomingMessageInterceptors.forEach((fn) => {
+            data = fn(data);
+          });
+        }
+        if (this.options.autoJson && typeof data === "string") {
+          try {
+            data = JSON.parse(data);
+          } catch (e) {
+          }
+        }
+        this.messagesReceived++;
+        if (this.options.heartbeatInterval && data === this.options.expectedPongMessage) {
+          this.log("debug", "[WS] Received pong");
+          this.dispatchEvent("pong", event);
+          if (this.pongTimeoutId) {
+            clearTimeout(this.pongTimeoutId);
+            this.pongTimeoutId = null;
+          }
+          this.lastLatency = Date.now() - this.lastPingTimestamp;
+          return;
+        }
+        const modifiedEvent = { ...event, data };
+        if (this.options.onMessage) this.options.onMessage(modifiedEvent);
+        this.dispatchEvent("message", modifiedEvent);
+      };
+      this.socket.onerror = (event) => {
+        this.log("error", "[WS] Error:", event);
+        if (this.options.onError) this.options.onError(event);
+        this.dispatchEvent("error", event);
+      };
+      this.socket.onclose = (event) => {
+        this.log("warn", "[WS] Connection closed:", event);
+        this.stopHeartbeat();
+        if (this.options.onClose) this.options.onClose(event);
+        this.dispatchEvent("close", event);
+        if (this.options.autoReconnect && this.reconnectAttempts < (this.options.maxReconnectAttempts || 0) && !this.destroyed) {
+          if (this.options.onBeforeReconnect && !this.options.onBeforeReconnect(this.reconnectAttempts, event)) {
+            this.log("info", "[WS] Reconnect canceled by onBeforeReconnect hook.");
+            return;
+          }
+          this.reconnectAttempts++;
+          this.dispatchEvent("reconnectAttempt", {
+            attempt: this.reconnectAttempts
+          });
+          let delay = this.computeReconnectDelay();
+          this.log(
+            "info",
+            `[WS] Reconnecting in ${delay}ms... (Attempt ${this.reconnectAttempts})`
+          );
+          setTimeout(() => {
+            if (this.fallbackUrls.length > 0) {
+              const nextUrl = this.fallbackUrls.shift();
+              if (nextUrl) {
+                this.log("info", `[WS] Switching to fallback URL: ${nextUrl}`);
+                this.currentUrl = nextUrl;
+              }
+            }
+            this.dispatchEvent("reconnect", { attempt: this.reconnectAttempts });
+            this.connect().then((sock) => {
+              this.dispatchEvent("reconnectSuccess", {
+                attempt: this.reconnectAttempts
+              });
+            }).catch((err) => {
+              this.log("error", "[WS] Reconnection failed:", err);
+            });
+          }, delay);
+        }
+      };
+    });
+  }
+  /**
+   * Computes the delay (ms) for the next reconnection attempt based on strategy.
+   */
+  computeReconnectDelay() {
+    let base = this.options.reconnectInterval || 1e3;
+    let delay;
+    switch (this.options.reconnectStrategy) {
+      case "fixed":
+        delay = base;
+        break;
+      case "exponential":
+        delay = base * Math.pow(2, this.reconnectAttempts - 1);
+        break;
+      case "exponential-jitter":
+        delay = base * Math.pow(2, this.reconnectAttempts - 1);
+        const jitter = this.options.jitter || 300;
+        delay += Math.floor(Math.random() * jitter);
+        break;
+      default:
+        delay = base;
+    }
+    if (this.options.maxReconnectInterval) {
+      delay = Math.min(delay, this.options.maxReconnectInterval);
+    }
+    return delay;
+  }
+  /**
+   * Sends data over the WebSocket.
+   * Returns a promise that resolves once the message is sent.
+   */
+  send(data) {
+    return new Promise((resolve, reject) => {
+      if (!this.socket || this.socket.readyState !== WebSocket.OPEN) {
+        if (this.options.queueMessages) {
+          if (this.options.messageQueueLimit && this.messageQueue.length >= this.options.messageQueueLimit) {
+            this.log("error", "[WS] Message queue full; discarding message.");
+            return reject(new Error("Message queue is full."));
+          }
+          this.log("debug", "[WS] Queuing message (connection not open).");
+          this.messageQueue.push(data);
+          return resolve();
+        } else {
+          this.log("error", "[WS] Socket not open; cannot send.");
+          return reject(new Error("WebSocket is not open."));
+        }
+      }
+      if (this.options.onBeforeSend) {
+        data = this.options.onBeforeSend(data);
+      }
+      if (this.options.outgoingMessageInterceptors) {
+        this.options.outgoingMessageInterceptors.forEach((fn) => {
+          data = fn(data);
+        });
+      }
+      if (this.options.autoJson && typeof data === "object") {
+        try {
+          data = JSON.stringify(data);
+        } catch (err) {
+          this.log("error", "[WS] JSON stringify error:", err);
+          return reject(err);
+        }
+      }
+      try {
+        this.socket.send(data);
+        this.messagesSent++;
+        if (this.options.onAfterSend) {
+          this.options.onAfterSend(data);
+        }
+        resolve();
+      } catch (err) {
+        reject(err);
+      }
+    });
+  }
+  /** Flush queued messages */
+  flushMessageQueue() {
+    this.log("debug", `[WS] Flushing ${this.messageQueue.length} queued message(s).`);
+    while (this.messageQueue.length > 0) {
+      const msg = this.messageQueue.shift();
+      if (msg !== void 0 && this.socket && this.socket.readyState === WebSocket.OPEN) {
+        this.send(msg).catch((err) => {
+          this.log("error", "[WS] Error sending queued message:", err);
+        });
+      }
+    }
+  }
+  /** Starts the heartbeat (ping/pong) mechanism */
+  startHeartbeat() {
+    if (this.options.heartbeatInterval && this.socket) {
+      this.log("debug", "[WS] Starting heartbeat.");
+      this.heartbeatIntervalId = window.setInterval(() => {
+        if (this.socket && this.socket.readyState === WebSocket.OPEN) {
+          this.log("debug", "[WS] Sending heartbeat ping.");
+          this.dispatchEvent("ping", { timestamp: Date.now() });
+          this.lastPingTimestamp = Date.now();
+          this.socket.send(this.options.heartbeatMessage);
+          if (this.options.heartbeatTimeout) {
+            this.pongTimeoutId = window.setTimeout(() => {
+              this.log("error", "[WS] Pong timeout; closing connection.");
+              this.socket?.close();
+            }, this.options.heartbeatTimeout);
+          }
+        }
+      }, this.options.heartbeatInterval);
+    }
+  }
+  /** Stops the heartbeat mechanism */
+  stopHeartbeat() {
+    if (this.heartbeatIntervalId) {
+      clearInterval(this.heartbeatIntervalId);
+      this.heartbeatIntervalId = null;
+    }
+    if (this.pongTimeoutId) {
+      clearTimeout(this.pongTimeoutId);
+      this.pongTimeoutId = null;
+    }
+  }
+  /** Closes the WebSocket connection gracefully */
+  close(code, reason) {
+    if (this.socket) {
+      this.socket.close(code, reason);
+      this.log("info", "[WS] Connection closed manually.");
+    }
+  }
+  /** Returns whether the connection is currently open */
+  isConnected() {
+    return this.socket !== null && this.socket.readyState === WebSocket.OPEN;
+  }
+  /** Returns a human‑readable connection state */
+  getConnectionState() {
+    if (!this.socket) return "CLOSED";
+    switch (this.socket.readyState) {
+      case WebSocket.CONNECTING:
+        return "CONNECTING";
+      case WebSocket.OPEN:
+        return "OPEN";
+      case WebSocket.CLOSING:
+        return "CLOSING";
+      case WebSocket.CLOSED:
+        return "CLOSED";
+      default:
+        return "UNKNOWN";
+    }
+  }
+  /** Forces a manual reconnect */
+  manualReconnect() {
+    this.log("info", "[WS] Manual reconnect initiated.");
+    if (this.socket && this.socket.readyState === WebSocket.OPEN) {
+      this.socket.close();
+    }
+    return this.connect();
+  }
+  /**
+   * Sends a message and waits for a response matching the predicate.
+   * Useful for request/response patterns.
+   */
+  sendAndWaitResponse(message, predicate, timeout = 5e3) {
+    return new Promise((resolve, reject) => {
+      const listener = (event) => {
+        if (predicate(event.data)) {
+          this.removeEventListener("message", listener);
+          resolve(event.data);
+        }
+      };
+      this.addEventListener("message", listener);
+      this.send(message).catch((err) => {
+        this.removeEventListener("message", listener);
+        reject(err);
+      });
+      setTimeout(() => {
+        this.removeEventListener("message", listener);
+        reject(new Error("Response timeout exceeded."));
+      }, timeout);
+    });
+  }
+  /** Returns metrics on the current connection */
+  getMetrics() {
+    return {
+      messagesSent: this.messagesSent,
+      messagesReceived: this.messagesReceived,
+      lastLatency: this.lastLatency,
+      reconnectAttempts: this.reconnectAttempts,
+      currentUrl: this.currentUrl
+    };
+  }
+  /** Destroys the instance, cleans up timers and listeners */
+  destroy() {
+    this.destroyed = true;
+    this.stopHeartbeat();
+    if (this.connectionTimeoutId) {
+      clearTimeout(this.connectionTimeoutId);
+      this.connectionTimeoutId = null;
+    }
+    this.eventListeners = {
+      open: [],
+      message: [],
+      close: [],
+      error: [],
+      reconnectAttempt: [],
+      reconnect: [],
+      reconnectSuccess: [],
+      ping: [],
+      pong: [],
+      custom: []
+    };
+    this.messageQueue = [];
+    if (this.socket) {
+      this.socket.close();
+      this.socket = null;
+    }
+    this.log("info", "[WS] Connection destroyed.");
+  }
+  /** Adds an event listener for a given event type */
+  addEventListener(eventType, callback) {
+    this.eventListeners[eventType].push(callback);
+  }
+  /** Removes an event listener for a given event type */
+  removeEventListener(eventType, callback) {
+    this.eventListeners[eventType] = this.eventListeners[eventType].filter(
+      (cb) => cb !== callback
+    );
+  }
+  /** Dispatches an event to all registered listeners */
+  dispatchEvent(eventType, event) {
+    this.eventListeners[eventType].forEach((cb) => cb(event));
+  }
+  /** Updates connection options dynamically (effective on next connection) */
+  updateOptions(newOptions) {
+    this.options = { ...this.options, ...newOptions };
+    this.log("debug", "[WS] Options updated:", this.options);
+  }
+  /** Clears the outgoing message queue */
+  clearMessageQueue() {
+    this.messageQueue = [];
+    this.log("debug", "[WS] Message queue cleared.");
+  }
+};
+var WSConnection_default = AdvancedWebSocket;
+
 // src/index.ts
 var index_default = {
   Application,
   Client,
-  Setup
+  Setup,
+  WebSocket: WSConnection_default
 };
 export {
   index_default as default

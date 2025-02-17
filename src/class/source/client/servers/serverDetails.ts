@@ -1,4 +1,4 @@
-interface Response {
+export interface Response {
     object: string;
     attributes: {
       server_owner: boolean;
