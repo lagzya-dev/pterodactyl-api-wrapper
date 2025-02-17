@@ -1,5 +1,45 @@
 import ApplicationAPICall from "../../../../functions/createAppCall";
 
+interface Response {
+    object: string,
+    attributes: {
+        id: number,
+        external_id: string,
+        uuid: string,
+        identifier: string,
+        name: string,
+        descriptions: string,
+        suspendes: boolean,
+        limits: {
+            memory: number,
+            swap: number,
+            disk: number,
+            io: number,
+            cpu: number,
+            threads: number[] | null
+        },
+        feature_limits: {
+            databases: number,
+            allocations: number,
+            backups: number
+        },
+        user: number,
+        node: number,
+        allocation: number,
+        nest: number,
+        egg: number,
+        container: {
+            startup_command: string,
+            image: string,
+            installed: boolean,
+            environment: [],
+        },
+        updated_at: string,
+        created_at: string
+    }
+}
+
+
 /**
  * Updates the startup configuration of a server, including environment variables and startup command.
  * 
@@ -12,7 +52,7 @@ import ApplicationAPICall from "../../../../functions/createAppCall";
  * @param {number} [options.startup_data.egg] - The new egg ID for the server.
  * @param {number} [options.startup_data.image] - The new Docker image for the server.
  * @param {Object} [options.startup_data.environment] - The environment variables for the server.
- * @returns {Promise<any>} - API response confirming the startup update.
+ * @returns {Promise<Response>} - API response confirming the startup update.
  *
  * @throws {Error} - Throws an error if the API request fails.
  */
@@ -26,7 +66,7 @@ export default async function updateServerStartup(options: {
         image?: string;
         environment?: Record<string, string>;
     };
-}): Promise<any> {
+}): Promise<Response> {
     return ApplicationAPICall({
         apiKey: options.apiKey,
         panel: options.panel,

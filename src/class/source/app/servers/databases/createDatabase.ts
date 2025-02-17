@@ -1,5 +1,23 @@
 import ApplicationAPICall from "../../../../../functions/createAppCall";
 
+interface Response {
+    object: string,
+    attributes: {
+        id: number,
+        server: number,
+        host: number,
+        database: string,
+        username: string,
+        remote: string,
+        max_connections: number | null,
+        created_at: string,
+        updated_at: string
+    },
+    meta: {
+        resource: string
+    }
+}
+
 /**
  * Creates a new database for a specific server.
  * 
@@ -10,7 +28,7 @@ import ApplicationAPICall from "../../../../../functions/createAppCall";
  * @param {Object} options.database_data - The data for the new database.
  * @param {string} options.database_data.database - The name of the database.
  * @param {string} options.database_data.remote - The remote access setting (e.g., `%` for any IP).
- * @returns {Promise<any>} - API response containing the created database details.
+ * @returns {Promise<Response>} - API response containing the created database details.
  *
  * @throws {Error} - Throws an error if the API request fails.
  */
@@ -22,7 +40,7 @@ export default async function createDatabase(options: {
         database: string;
         remote: string;
     };
-}): Promise<any> {
+}): Promise<Response> {
     return ApplicationAPICall({
         apiKey: options.apiKey,
         panel: options.panel,

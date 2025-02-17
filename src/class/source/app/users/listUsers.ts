@@ -1,5 +1,36 @@
 import ApplicationAPICall from "../../../../functions/createAppCall";
 
+interface Response {
+    object: string,
+    data: {
+        object: string,
+        attributes: {
+            id: number,
+            external_id: string | null,
+            uuid: string,
+            username: string,
+            email: string,
+            first_name: string,
+            last_name: string,
+            language: string,
+            root_admin: boolean,
+            "2fa": boolean,
+            created_at: string,
+            updated_at: string
+        }
+    }[],
+    meta: {
+        pagination: {
+            total: number,
+            count: number,
+            per_page: number,
+            current_page: number,
+            total_page: number,
+            links: object
+        }
+    }
+}
+
 /**
  * Retrieves a list of users from the Pterodactyl panel API, with optional filters and sorting.
  * This function makes a `GET` request and includes the request body if required.
@@ -16,7 +47,7 @@ import ApplicationAPICall from "../../../../functions/createAppCall";
  * @param {Object} [options.sortBy] - Sorting preferences for the response.
  * @param {boolean} [options.sortBy.id=false] - Sort users by ID.
  * @param {boolean} [options.sortBy.uuid=false] - Sort users by UUID.
- * @returns {Promise<any>} - A Promise resolving to the API response.
+ * @returns {Promise<Response>} - A Promise resolving to the API response.
  *
  * @throws {Error} - Throws an error if the API request fails.
  */
@@ -35,7 +66,7 @@ export default async function listUsers(options: {
         id?: boolean,
         uuid?: boolean
     }
-}): Promise<any> {
+}): Promise<Response> {
     const body = {
         servers: options.showLinkedServers ?? false,
         filters: {

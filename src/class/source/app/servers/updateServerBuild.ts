@@ -1,5 +1,45 @@
 import ApplicationAPICall from "../../../../functions/createAppCall";
 
+interface Response {
+    object: string,
+    attributes: {
+        id: number,
+        external_id: string,
+        uuid: string,
+        identifier: string,
+        name: string,
+        descriptions: string,
+        suspendes: boolean,
+        limits: {
+            memory: number,
+            swap: number,
+            disk: number,
+            io: number,
+            cpu: number,
+            threads: number[] | null
+        },
+        feature_limits: {
+            databases: number,
+            allocations: number,
+            backups: number
+        },
+        user: number,
+        node: number,
+        allocation: number,
+        nest: number,
+        egg: number,
+        container: {
+            startup_command: string,
+            image: string,
+            installed: boolean,
+            environment: [],
+        },
+        updated_at: string,
+        created_at: string
+    }
+}
+
+
 /**
  * Updates the build configuration of a server, including CPU, memory, disk, and other limits.
  * 
@@ -15,7 +55,7 @@ import ApplicationAPICall from "../../../../functions/createAppCall";
  * @param {number} [options.build_data.io] - The block I/O weight (10-1000).
  * @param {number} [options.build_data.threads] - The CPU threads allowed for the server.
  * @param {boolean} [options.build_data.oom_disabled] - Whether to disable Out-of-Memory (OOM) killer.
- * @returns {Promise<any>} - API response confirming the build update.
+ * @returns {Promise<Response>} - API response confirming the build update.
  *
  * @throws {Error} - Throws an error if the API request fails.
  */
@@ -32,7 +72,7 @@ export default async function updateServerBuild(options: {
         threads?: number;
         oom_disabled?: boolean;
     };
-}): Promise<any> {
+}): Promise<Response> {
     return ApplicationAPICall({
         apiKey: options.apiKey,
         panel: options.panel,

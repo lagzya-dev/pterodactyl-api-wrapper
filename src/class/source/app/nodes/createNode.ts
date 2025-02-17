@@ -1,5 +1,38 @@
 import ApplicationAPICall from "../../../../functions/createAppCall";
 
+interface Response {
+    object: string,
+    attributes: {
+        id: number,
+        uuid: string,
+        public: boolean,
+        name: string,
+        description: null | string,
+        location_id: number,
+        fqdn: string,
+        scheme: string,
+        behind_proxy: boolean,
+        maintenance_mode: boolean,
+        memory: number,
+        memory_overallocate: number,
+        disk: number,
+        disk_overallocate: number,
+        upload_size: number,
+        daemon_listen: number,
+        daemon_sftp: number,
+        daemon_base: string,
+        created_at: string,
+        updated_at: string,
+        allocated_resources: {
+            memory: number,
+            disk: number
+        }
+    },
+    meta: {
+        resource: string
+    }
+}
+
 /**
  * Creates a new node on the Pterodactyl panel.
  * 
@@ -17,7 +50,7 @@ import ApplicationAPICall from "../../../../functions/createAppCall";
  * @param {number[]} [options.node_data.ports] - Optional list of ports assigned to the node.
  * @param {number} options.node_data.daemon_sftp - The SFTP port of the node.
  * @param {number} options.node_data.daemon_listen - The daemon listen port of the node.
- * @returns {Promise<any>} - API response.
+ * @returns {Promise<Response>} - API response.
  *
  * @throws {Error} - Throws an error if the API request fails.
  */
@@ -36,7 +69,7 @@ export default async function createNode(options: {
         daemon_sftp: number;
         daemon_listen: number;
     };
-}): Promise<any> {
+}): Promise<Response> {
     return ApplicationAPICall({
         apiKey: options.apiKey,
         panel: options.panel,

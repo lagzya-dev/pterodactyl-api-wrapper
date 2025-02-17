@@ -1,5 +1,36 @@
 import ApplicationAPICall from "../../../../functions/createAppCall";
 
+interface Response {
+    object: string,
+    attributes: {
+        id: number,
+        uuid: string,
+        public: boolean, 
+        name: string,
+        description: string,
+        location_id: number,
+        fqdn: string,
+        scheme: string,
+        behind_proxy: boolean,
+        maintenance_mode: boolean,
+        memory: number,
+        memory_overallocate: number,
+        disk: number,
+        disk_overallocate: number,
+        upload_size: number,
+        daemon_listen: number,
+        daemon_sftp: number,
+        daemon_base: string,
+        created_at: string,
+        updated_at: string,
+        mounts: [],
+        allocated_resources: {
+            memory: number,
+            disk: number
+        }
+    }
+}
+
 /**
  * Updates an existing node with new settings.
  *
@@ -15,7 +46,7 @@ import ApplicationAPICall from "../../../../functions/createAppCall";
  * @param {number} [options.update_data.disk] - The new disk allocation for the node (optional, in MB).
  * @param {number} [options.update_data.daemon_sftp] - The new SFTP port for the node (optional).
  * @param {number} [options.update_data.daemon_listen] - The new daemon listen port for the node (optional).
- * @returns {Promise<any>} - API response.
+ * @returns {Promise<Response>} - API response.
  *
  * @throws {Error} - Throws an error if the API request fails.
  */
@@ -32,7 +63,7 @@ export default async function updateNode(options: {
         daemon_sftp?: number;
         daemon_listen?: number;
     };
-}): Promise<any> {
+}): Promise<Response> {
     return ApplicationAPICall({
         apiKey: options.apiKey,
         panel: options.panel,

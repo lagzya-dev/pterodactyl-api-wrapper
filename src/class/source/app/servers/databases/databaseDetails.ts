@@ -1,5 +1,19 @@
 import ApplicationAPICall from "../../../../../functions/createAppCall";
 
+interface Response {
+    object: string,
+    attributes: {
+        id: number,
+        server: number,
+        host: number,
+        database: string,
+        username: string,
+        remote: string,
+        max_connections: number,
+        created_at: string,
+        updated_at: string
+    }
+}
 /**
  * Retrieves details of a specific database.
  * 
@@ -8,7 +22,7 @@ import ApplicationAPICall from "../../../../../functions/createAppCall";
  * @param {string} options.panel - The base URL of the Pterodactyl panel.
  * @param {string} options.server_id - The ID of the server.
  * @param {number} options.database_id - The ID of the database.
- * @returns {Promise<any>} - API response containing database details.
+ * @returns {Promise<Response>} - API response containing database details.
  *
  * @throws {Error} - Throws an error if the API request fails.
  */
@@ -17,7 +31,7 @@ export default async function databaseDetails(options: {
     panel: string; 
     server_id: string;
     database_id: number;
-}): Promise<any> {
+}): Promise<Response> {
     return ApplicationAPICall({
         apiKey: options.apiKey,
         panel: options.panel,

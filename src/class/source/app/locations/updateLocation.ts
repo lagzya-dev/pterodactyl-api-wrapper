@@ -1,5 +1,16 @@
 import ApplicationAPICall from "../../../../functions/createAppCall";
 
+interface Response {
+    object: string,
+    attributes: {
+        id: number,
+        short: string,
+        long: string,
+        updated_at: string,
+        created_at: string
+    }
+}
+
 /**
  * Updates an existing location on the Pterodactyl panel.
  * 
@@ -10,7 +21,7 @@ import ApplicationAPICall from "../../../../functions/createAppCall";
  * @param {Object} options.update_data - The new data for updating the location.
  * @param {string} [options.update_data.short] - The new short identifier for the location (optional).
  * @param {string} [options.update_data.long] - The new long description of the location (optional).
- * @returns {Promise<any>} - API response confirming the update.
+ * @returns {Promise<Response>} - API response confirming the update.
  *
  * @throws {Error} - Throws an error if the API request fails.
  */
@@ -22,7 +33,7 @@ export default async function updateLocation(options: {
         short?: string;
         long?: string;
     };
-}): Promise<any> {
+}): Promise<Response> {
     return ApplicationAPICall({
         apiKey: options.apiKey,
         panel: options.panel,

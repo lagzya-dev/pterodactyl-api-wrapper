@@ -1,5 +1,23 @@
 import ApplicationAPICall from "../../../../functions/createAppCall";
 
+interface Response {
+    object: string,
+    attributes: {
+        id: number,
+        external_id: string | null,
+        uuid: string,
+        username: string,
+        email: string,
+        first_name: string,
+        last_name: string,
+        language: string,
+        root_admin: string,
+        "2fa": boolean,
+        created_at: string,
+        updated_at: string
+    }
+}
+
 /**
  * Retrieves user details from the Pterodactyl panel API using an external identifier.
  * Optionally, it can include the list of servers associated with the user.
@@ -9,7 +27,7 @@ import ApplicationAPICall from "../../../../functions/createAppCall";
  * @param {string} options.panel - The base URL of the Pterodactyl panel.
  * @param {string} options.external_id - The external identifier of the user to retrieve.
  * @param {boolean} [options.listServers=false] - Whether to include the user's linked servers in the response.
- * @returns {Promise<any>} - A Promise resolving to the API response.
+ * @returns {Promise<Response>} - A Promise resolving to the API response.
  *
  * @throws {Error} - Throws an error if the API request fails.
  *
@@ -33,7 +51,7 @@ export default async function userDetailsByExternalIdentifier(options: {
     panel: string, 
     external_id: string, 
     listServers?: boolean 
-}): Promise<any> {
+}): Promise<Response> {
     return ApplicationAPICall({
         apiKey: options.apiKey,
         panel: options.panel,

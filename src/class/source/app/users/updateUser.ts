@@ -1,5 +1,23 @@
 import ApplicationAPICall from "../../../../functions/createAppCall";
 
+interface Response {
+    object: string,
+    attributes: {
+        id: number,
+        external_id: string | null,
+        uuid: string,
+        username: string,
+        email: string,
+        first_name: string,
+        last_name: string,
+        language: string,
+        root_admin: string,
+        "2fa": boolean,
+        created_at: string,
+        updated_at: string
+    }
+}
+
 /**
  * Updates a user's details on the Pterodactyl panel.
  * You can update the user's email, username, first name, last name, language, or password.
@@ -15,7 +33,7 @@ import ApplicationAPICall from "../../../../functions/createAppCall";
  * @param {string} [options.data.last_name] - The new last name of the user (optional).
  * @param {string} [options.data.language] - The new language preference for the user (optional).
  * @param {string} [options.data.password] - The new password for the user (optional).
- * @returns {Promise<any>} - A Promise resolving to the API response.
+ * @returns {Promise<Response>} - A Promise resolving to the API response.
  *
  * @throws {Error} - Throws an error if the API request fails.
  *
@@ -51,7 +69,7 @@ export default async function updateUser(options: {
         language?: string;
         password?: string;
     };
-}): Promise<any> {
+}): Promise<Response> {
     return ApplicationAPICall({
         apiKey: options.apiKey,
         panel: options.panel,

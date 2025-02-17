@@ -1,5 +1,23 @@
 import ApplicationAPICall from "../../../../functions/createAppCall";
 
+interface Response {
+    object: string,
+    attributes: {
+        id: number,
+        external_id: string | null,
+        uuid: string,
+        username: string,
+        email: string,
+        first_name: string,
+        last_name: string,
+        language: string,
+        root_admin: string,
+        "2fa": boolean,
+        created_at: string,
+        updated_at: string
+    }
+}
+
 /**
  * Creates a new user in the Pterodactyl panel using the provided user details.
  * If `first_name` or `last_name` are not provided, they default to `"Pterodactyl"` and `"User"`, respectively.
@@ -12,7 +30,7 @@ import ApplicationAPICall from "../../../../functions/createAppCall";
  * @param {string} options.user_details.username - The username of the user.
  * @param {string} [options.user_details.first_name="Pterodactyl"] - The first name of the user (optional).
  * @param {string} [options.user_details.last_name="User"] - The last name of the user (optional).
- * @returns {Promise<any>} - A Promise resolving to the API response.
+ * @returns {Promise<Response>} - A Promise resolving to the API response.
  *
  * @throws {Error} - Throws an error if the API request fails.
  *
@@ -44,7 +62,7 @@ export default async function createUser(options: {
         first_name?: string;
         last_name?: string;
     };
-}): Promise<any> {
+}): Promise<Response> {
     return ApplicationAPICall({
         apiKey: options.apiKey,
         panel: options.panel,

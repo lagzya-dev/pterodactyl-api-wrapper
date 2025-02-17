@@ -1,5 +1,19 @@
 import ApplicationAPICall from "../../../../functions/createAppCall";
 
+interface Response {
+    object: string,
+    attributes: {
+        id: number,
+        short: string,
+        long: string,
+        updates_at: string,
+        created_at: string
+    },
+    meta: {
+        resource: string
+    }
+}
+
 /**
  * Creates a new location on the Pterodactyl panel.
  * 
@@ -9,7 +23,7 @@ import ApplicationAPICall from "../../../../functions/createAppCall";
  * @param {Object} options.location_data - The data required to create a new location.
  * @param {string} options.location_data.short - A short identifier for the location (e.g., "us-east").
  * @param {string} options.location_data.long - A long description of the location (e.g., "US East Coast Datacenter").
- * @returns {Promise<any>} - API response containing the created location details.
+ * @returns {Promise<Response>} - API response containing the created location details.
  *
  * @throws {Error} - Throws an error if the API request fails.
  */
@@ -20,7 +34,7 @@ export default async function createLocation(options: {
         short: string;
         long: string;
     };
-}): Promise<any> {
+}): Promise<Response> {
     return ApplicationAPICall({
         apiKey: options.apiKey,
         panel: options.panel,
