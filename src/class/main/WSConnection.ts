@@ -1,3 +1,5 @@
+// WSConnection.ts
+
 type ReconnectStrategy = "fixed" | "exponential" | "exponential-jitter";
 
 type EventType =
@@ -12,7 +14,7 @@ type EventType =
   | "pong"
   | "custom";
 
-interface WebSocketConnectionOptions {
+export interface WSConnectionOptions {
   /** Primary WebSocket URL (required) */
   url: string;
   /** Optional fallback URLs if the primary fails */
@@ -54,7 +56,10 @@ interface WebSocketConnectionOptions {
   autoJson?: boolean;
 
   /** Custom logger callback; if not provided, uses console */
-  logger?: (level: "debug" | "info" | "warn" | "error", ...args: any[]) => void;
+  logger?: (
+    level: "debug" | "info" | "warn" | "error",
+    ...args: any[]
+  ) => void;
   /** Outgoing message interceptors (middleware) */
   outgoingMessageInterceptors?: Array<(message: any) => any>;
   /** Incoming message interceptors (middleware) */
@@ -74,7 +79,7 @@ interface WebSocketConnectionOptions {
   onError?: (event: Event) => void;
 }
 
-interface WebSocketMetrics {
+export interface WSMetrics {
   messagesSent: number;
   messagesReceived: number;
   lastLatency: number;
@@ -113,9 +118,9 @@ class AdvancedWebSocket {
     custom: [],
   };
 
-  private options: WebSocketConnectionOptions;
+  private options: WSConnectionOptions;
 
-  constructor(options: WebSocketConnectionOptions) {
+  constructor(options: WSConnectionOptions) {
     if (!options.url) {
       throw new Error("A URL is required to establish a WebSocket connection.");
     }
@@ -183,7 +188,7 @@ class AdvancedWebSocket {
         }
         if (this.options.onOpen) this.options.onOpen(event);
         this.dispatchEvent("open", event);
-        resolve(this.socket);
+        resolve(this.socket!); // Assert non-null
       };
 
       this.socket.onmessage = (event) => {
@@ -250,7 +255,10 @@ class AdvancedWebSocket {
             attempt: this.reconnectAttempts,
           });
           let delay = this.computeReconnectDelay();
-          this.log("info", `[WS] Reconnecting in ${delay}ms... (Attempt ${this.reconnectAttempts})`);
+          this.log(
+            "info",
+            `[WS] Reconnecting in ${delay}ms... (Attempt ${this.reconnectAttempts})`
+          );
           setTimeout(() => {
             // Try fallback URLs if provided.
             if (this.fallbackUrls.length > 0) {
@@ -263,7 +271,9 @@ class AdvancedWebSocket {
             this.dispatchEvent("reconnect", { attempt: this.reconnectAttempts });
             this.connect()
               .then((sock) => {
-                this.dispatchEvent("reconnectSuccess", { attempt: this.reconnectAttempts });
+                this.dispatchEvent("reconnectSuccess", {
+                  attempt: this.reconnectAttempts,
+                });
               })
               .catch((err) => {
                 this.log("error", "[WS] Reconnection failed:", err);
@@ -419,11 +429,16 @@ class AdvancedWebSocket {
   getConnectionState(): string {
     if (!this.socket) return "CLOSED";
     switch (this.socket.readyState) {
-      case WebSocket.CONNECTING: return "CONNECTING";
-      case WebSocket.OPEN: return "OPEN";
-      case WebSocket.CLOSING: return "CLOSING";
-      case WebSocket.CLOSED: return "CLOSED";
-      default: return "UNKNOWN";
+      case WebSocket.CONNECTING:
+        return "CONNECTING";
+      case WebSocket.OPEN:
+        return "OPEN";
+      case WebSocket.CLOSING:
+        return "CLOSING";
+      case WebSocket.CLOSED:
+        return "CLOSED";
+      default:
+        return "UNKNOWN";
     }
   }
 
@@ -465,7 +480,7 @@ class AdvancedWebSocket {
   }
 
   /** Returns metrics on the current connection */
-  getMetrics(): WebSocketMetrics {
+  getMetrics(): WSMetrics {
     return {
       messagesSent: this.messagesSent,
       messagesReceived: this.messagesReceived,
@@ -510,16 +525,18 @@ class AdvancedWebSocket {
 
   /** Removes an event listener for a given event type */
   removeEventListener(eventType: EventType, callback: (event: any) => void): void {
-    this.eventListeners[eventType] = this.eventListeners[eventType].filter(cb => cb !== callback);
+    this.eventListeners[eventType] = this.eventListeners[eventType].filter(
+      (cb) => cb !== callback
+    );
   }
 
   /** Dispatches an event to all registered listeners */
   private dispatchEvent(eventType: EventType, event: any): void {
-    this.eventListeners[eventType].forEach(cb => cb(event));
+    this.eventListeners[eventType].forEach((cb) => cb(event));
   }
 
   /** Updates connection options dynamically (effective on next connection) */
-  updateOptions(newOptions: Partial<WebSocketConnectionOptions>): void {
+  updateOptions(newOptions: Partial<WSConnectionOptions>): void {
     this.options = { ...this.options, ...newOptions };
     this.log("debug", "[WS] Options updated:", this.options);
   }
@@ -530,3 +547,5 @@ class AdvancedWebSocket {
     this.log("debug", "[WS] Message queue cleared.");
   }
 }
+
+export default AdvancedWebSocket;
