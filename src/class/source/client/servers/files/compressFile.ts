@@ -1,5 +1,21 @@
 import ClientAPICall from "../../../../../functions/createAppCall";
 
+interface Response {
+    object: string;
+    attributes: {
+      name: string;
+      mode: string;
+      size: number;
+      is_file: boolean;
+      is_symlink: boolean;
+      is_editable: boolean;
+      mimetype: string;
+      created_at: string;
+      modified_at: string;
+    };
+  }
+  
+
 /**
  * Compresses files or directories on a server into a ZIP archive.
  *
@@ -8,7 +24,7 @@ import ClientAPICall from "../../../../../functions/createAppCall";
  * @param {string} options.panel - The base URL of the Pterodactyl panel.
  * @param {string} options.server_id - The ID of the server.
  * @param {string[]} options.files - An array of files or directories to compress.
- * @returns {Promise<any>} - API response confirming compression.
+ * @returns {Promise<Response>} - API response confirming compression.
  *
  * @throws {Error} - Throws an error if the API request fails.
  */
@@ -17,7 +33,7 @@ export default async function compressFile(options: {
     panel: string; 
     server_id: string;
     files: string[];
-}): Promise<any> {
+}): Promise<Response> {
     return ClientAPICall({
         apiKey: options.apiKey,
         panel: options.panel,

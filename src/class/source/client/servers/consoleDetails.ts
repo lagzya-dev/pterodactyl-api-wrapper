@@ -1,3 +1,10 @@
+interface Response {
+    data: {
+      token: string;
+      socket: string;
+    };
+  }
+  
 /**
  * Retrieves real-time console details for a server.
  * 
@@ -5,13 +12,13 @@
  * @param {string} options.apiKey - The API key.
  * @param {string} options.panel - The panel URL.
  * @param {string} options.server_id - The server identifier.
- * @returns {Promise<any>} - A promise resolving with console details.
+ * @returns {Promise<Response>} - A promise resolving with console details.
  */
 export default async function consoleDetails(options: { 
     apiKey: string; 
     panel: string; 
     server_id: string; 
-}): Promise<any> {
+}): Promise<Response> {
     const response = await fetch(`${options.panel}/api/client/servers/${options.server_id}/websocket`, {
         method: "GET",
         headers: {

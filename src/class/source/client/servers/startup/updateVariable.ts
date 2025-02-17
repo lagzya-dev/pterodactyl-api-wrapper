@@ -1,5 +1,19 @@
 import ClientAPICall from "../../../../../functions/createAppCall";
 
+interface Response {
+    object: string;
+    attributes: {
+      name: string;
+      description: string;
+      env_variable: string;
+      default_value: string;
+      server_value: string;
+      is_editable: boolean;
+      rules: string;
+    };
+  }
+  
+
 /**
  * Updates a startup variable for a specific server.
  *
@@ -9,7 +23,7 @@ import ClientAPICall from "../../../../../functions/createAppCall";
  * @param {string} options.server_id - The ID of the server.
  * @param {number} options.variable_id - The ID of the startup variable.
  * @param {string} options.value - The new value for the variable.
- * @returns {Promise<any>} - API response confirming variable update.
+ * @returns {Promise<Response>} - API response confirming variable update.
  *
  * @throws {Error} - Throws an error if the API request fails.
  */
@@ -19,7 +33,7 @@ export default async function updateVariable(options: {
     server_id: string;
     variable_id: number;
     value: string;
-}): Promise<any> {
+}): Promise<Response> {
     return ClientAPICall({
         apiKey: options.apiKey,
         panel: options.panel,

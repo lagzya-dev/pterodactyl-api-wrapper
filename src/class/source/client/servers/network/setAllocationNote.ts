@@ -1,5 +1,18 @@
 import ClientAPICall from "../../../../../functions/createAppCall";
 
+interface Response {
+    object: string;
+    attributes: {
+      id: number;
+      ip: string;
+      ip_alias: string | null;
+      port: number;
+      notes: string | null;
+      is_default: boolean;
+    };
+  }
+
+  
 /**
  * Updates the note for a specific allocation on a server.
  *
@@ -9,7 +22,7 @@ import ClientAPICall from "../../../../../functions/createAppCall";
  * @param {string} options.server_id - The ID of the server.
  * @param {number} options.allocation_id - The ID of the allocation to update.
  * @param {string} options.note - The new note for the allocation.
- * @returns {Promise<any>} - API response confirming the note update.
+ * @returns {Promise<Response>} - API response confirming the note update.
  *
  * @throws {Error} - Throws an error if the API request fails.
  */
@@ -19,7 +32,7 @@ export default async function setAllocationNote(options: {
     server_id: string;
     allocation_id: number;
     note: string;
-}): Promise<any> {
+}): Promise<Response> {
     return ClientAPICall({
         apiKey: options.apiKey,
         panel: options.panel,

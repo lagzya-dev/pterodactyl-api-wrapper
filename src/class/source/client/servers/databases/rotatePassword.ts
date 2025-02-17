@@ -1,5 +1,29 @@
 import ClientAPICall from "../../../../../functions/createAppCall";
 
+interface Response {
+    object: string;
+    attributes: {
+      id: string;
+      host: {
+        address: string;
+        port: number;
+      };
+      name: string;
+      username: string;
+      connections_from: string;
+      max_connections: number;
+      relationships: {
+        password: {
+          object: string;
+          attributes: {
+            password: string;
+          };
+        };
+      };
+    };
+  }
+  
+
 /**
  * Rotates the password for a specific database.
  *
@@ -8,7 +32,7 @@ import ClientAPICall from "../../../../../functions/createAppCall";
  * @param {string} options.panel - The base URL of the Pterodactyl panel.
  * @param {string} options.server_id - The ID of the server.
  * @param {string} options.database_id - The ID of the database.
- * @returns {Promise<any>} - API response confirming password rotation.
+ * @returns {Promise<Response>} - API response confirming password rotation.
  *
  * @throws {Error} - Throws an error if the API request fails.
  */
@@ -17,7 +41,7 @@ export default async function rotatePassword(options: {
     panel: string; 
     server_id: string;
     database_id: string;
-}): Promise<any> {
+}): Promise<Response> {
     return ClientAPICall({
         apiKey: options.apiKey,
         panel: options.panel,

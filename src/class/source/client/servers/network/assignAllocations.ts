@@ -1,5 +1,18 @@
 import ClientAPICall from "../../../../../functions/createAppCall";
 
+interface Response {
+    object: string;
+    attributes: {
+      id: number;
+      ip: string;
+      ip_alias: string | null;
+      port: number;
+      notes: string | null;
+      is_default: boolean;
+    };
+  }
+
+  
 /**
  * Assigns a new allocation to a server.
  *
@@ -8,7 +21,7 @@ import ClientAPICall from "../../../../../functions/createAppCall";
  * @param {string} options.panel - The base URL of the Pterodactyl panel.
  * @param {string} options.server_id - The ID of the server.
  * @param {number} options.allocation_id - The ID of the allocation to assign.
- * @returns {Promise<any>} - API response confirming allocation assignment.
+ * @returns {Promise<Response>} - API response confirming allocation assignment.
  *
  * @throws {Error} - Throws an error if the API request fails.
  */
@@ -17,7 +30,7 @@ export default async function assignAllocations(options: {
     panel: string; 
     server_id: string;
     allocation_id: number;
-}): Promise<any> {
+}): Promise<Response> {
     return ClientAPICall({
         apiKey: options.apiKey,
         panel: options.panel,

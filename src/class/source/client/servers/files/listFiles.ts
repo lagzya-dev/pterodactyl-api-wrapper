@@ -1,5 +1,24 @@
 import ClientAPICall from "../../../../../functions/createAppCall";
 
+interface Response {
+    object: string;
+    data: Array<{
+      object: string;
+      attributes: {
+        name: string;
+        mode: string;
+        size: number;
+        is_file: boolean;
+        is_symlink: boolean;
+        is_editable: boolean;
+        mimetype: string;
+        created_at: string;
+        modified_at: string;
+      };
+    }>;
+  }
+  
+
 /**
  * Retrieves a list of all files and directories for a specific server.
  *
@@ -8,7 +27,7 @@ import ClientAPICall from "../../../../../functions/createAppCall";
  * @param {string} options.panel - The base URL of the Pterodactyl panel.
  * @param {string} options.server_id - The ID of the server.
  * @param {string} [options.directory] - The directory path to list files from (optional).
- * @returns {Promise<any>} - API response containing the list of files.
+ * @returns {Promise<Response>} - API response containing the list of files.
  *
  * @throws {Error} - Throws an error if the API request fails.
  */
@@ -17,7 +36,7 @@ export default async function listFiles(options: {
     panel: string; 
     server_id: string;
     directory?: string;
-}): Promise<any> {
+}): Promise<Response> {
     return ClientAPICall({
         apiKey: options.apiKey,
         panel: options.panel,

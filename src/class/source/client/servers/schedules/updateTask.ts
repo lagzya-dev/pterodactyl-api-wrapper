@@ -1,3 +1,18 @@
+interface Response {
+    object: string;
+    attributes: {
+      id: number;
+      sequence_id: number;
+      action: string;
+      payload: string;
+      time_offset: number;
+      is_queued: boolean;
+      created_at: string;
+      updated_at: string;
+    };
+  }
+  
+
 /**
  * Updates an existing task inside a specific schedule.
  *
@@ -8,7 +23,7 @@
  * @param {string} options.schedule_id - The schedule identifier.
  * @param {string} options.task_id - The task identifier.
  * @param {Object} options.task_data - The updated task details.
- * @returns {Promise<any>} - A promise resolving with the updated task details.
+ * @returns {Promise<Response>} - A promise resolving with the updated task details.
  */
 export default async function updateTask(options: {
     apiKey: string;
@@ -16,7 +31,7 @@ export default async function updateTask(options: {
     server_id: string;
     schedule_id: string;
     task_id: string;
-} & Record<string, any>): Promise<any> {
+} & Record<string, any>): Promise<Response> {
     const { apiKey, panel, server_id, schedule_id, task_id, ...task_data } = options;
 
     const response = await fetch(`${panel}/api/client/servers/${server_id}/schedules/${schedule_id}/tasks/${task_id}`, {

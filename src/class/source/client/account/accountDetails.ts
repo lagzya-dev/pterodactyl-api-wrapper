@@ -1,5 +1,19 @@
 import ClientAPICall from "../../../../functions/createAppCall";
 
+interface Response {
+    object: string;
+    attributes: {
+      id: number;
+      admin: boolean;
+      username: string;
+      email: string;
+      first_name: string;
+      last_name: string;
+      language: string;
+    };
+  }
+
+  
 /**
  * Retrieves account details for the authenticated user.
  * 
@@ -13,7 +27,7 @@ import ClientAPICall from "../../../../functions/createAppCall";
 export default async function accountDetails(options: { 
     apiKey: string; 
     panel: string; 
-}): Promise<any> {
+}): Promise<Response> {
     return ClientAPICall({
         apiKey: options.apiKey,
         panel: options.panel,

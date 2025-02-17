@@ -1,5 +1,19 @@
 import ClientAPICall from "../../../../../functions/createAppCall";
 
+interface Response {
+    object: string;
+    attributes: {
+      uuid: string;
+      name: string;
+      ignored_files: string[];
+      sha256_hash: string | null;
+      bytes: number;
+      created_at: string;
+      completed_at: string | null;
+    };
+  }
+  
+
 /**
  * Creates a new backup for a server.
  *
@@ -10,7 +24,7 @@ import ClientAPICall from "../../../../../functions/createAppCall";
  * @param {Object} [options.backup_data] - Optional backup settings.
  * @param {string} [options.backup_data.name] - Name for the backup.
  * @param {boolean} [options.backup_data.locked] - Whether the backup is locked.
- * @returns {Promise<any>} - API response confirming backup creation.
+ * @returns {Promise<Response>} - API response confirming backup creation.
  *
  * @throws {Error} - Throws an error if the API request fails.
  */
@@ -22,7 +36,7 @@ export default async function createBackup(options: {
         name?: string;
         locked?: boolean;
     };
-}): Promise<any> {
+}): Promise<Response> {
     return ClientAPICall({
         apiKey: options.apiKey,
         panel: options.panel,

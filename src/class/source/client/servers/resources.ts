@@ -1,3 +1,19 @@
+interface Response {
+    object: string;
+    attributes: {
+      current_state: string;
+      is_suspended: boolean;
+      resources: {
+        memory_bytes: number;
+        cpu_absolute: number;
+        disk_bytes: number;
+        network_rx_bytes: number;
+        network_tx_bytes: number;
+      };
+    };
+  }
+  
+
 /**
  * Fetches resource usage (CPU, RAM, disk) for a server.
  * 
@@ -5,13 +21,13 @@
  * @param {string} options.apiKey - The API key.
  * @param {string} options.panel - The panel URL.
  * @param {string} options.server_id - The server identifier.
- * @returns {Promise<any>} - A promise resolving with server resource usage details.
+ * @returns {Promise<Response>} - A promise resolving with server resource usage details.
  */
 export default async function resources(options: { 
     apiKey: string; 
     panel: string; 
     server_id: string; 
-}): Promise<any> {
+}): Promise<Response> {
     const response = await fetch(`${options.panel}/api/client/servers/${options.server_id}/resources`, {
         method: "GET",
         headers: {

@@ -1,5 +1,13 @@
 import ClientAPICall from "../../../../../functions/createAppCall";
 
+interface Response {
+    object: string;
+    attributes: {
+      url: string;
+    };
+}
+  
+
 /**
  * Retrieves a download link for a backup file.
  *
@@ -8,7 +16,7 @@ import ClientAPICall from "../../../../../functions/createAppCall";
  * @param {string} options.panel - The base URL of the Pterodactyl panel.
  * @param {string} options.server_id - The ID of the server.
  * @param {string} options.backup_id - The ID of the backup.
- * @returns {Promise<any>} - API response containing the download URL.
+ * @returns {Promise<Response>} - API response containing the download URL.
  *
  * @throws {Error} - Throws an error if the API request fails.
  */
@@ -17,7 +25,7 @@ export default async function downloadBackup(options: {
     panel: string; 
     server_id: string;
     backup_id: string;
-}): Promise<any> {
+}): Promise<Response> {
     return ClientAPICall({
         apiKey: options.apiKey,
         panel: options.panel,

@@ -1,5 +1,19 @@
 import ClientAPICall from "../../../../../functions/createAppCall";
 
+interface Response {
+    object: "server_subuser";
+    attributes: {
+      uuid: string;
+      username: string;
+      email: string;
+      image: string;
+      "2fa_enabled": boolean;
+      created_at: string;
+      permissions: string[];
+    };
+  }
+  
+
 /**
  * Assigns a new user to a server with specific permissions.
  *
@@ -10,7 +24,7 @@ import ClientAPICall from "../../../../../functions/createAppCall";
  * @param {string} options.email - The email address of the user.
  * @param {string} options.username - The username of the user.
  * @param {string[]} options.permissions - An array of permissions for the user.
- * @returns {Promise<any>} - API response confirming user creation.
+ * @returns {Promise<Response>} - API response confirming user creation.
  *
  * @throws {Error} - Throws an error if the API request fails.
  */
@@ -21,7 +35,7 @@ export default async function createUser(options: {
     email: string;
     username: string;
     permissions: string[];
-}): Promise<any> {
+}): Promise<Response> {
     return ClientAPICall({
         apiKey: options.apiKey,
         panel: options.panel,

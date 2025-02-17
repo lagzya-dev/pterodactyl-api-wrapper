@@ -1,5 +1,29 @@
 import ClientAPICall from "../../../../../functions/createAppCall";
 
+interface Response {
+    object: string;
+    attributes: {
+      id: string;
+      host: {
+        address: string;
+        port: number;
+      };
+      name: string;
+      username: string;
+      connections_from: string;
+      max_connections: number;
+      relationships: {
+        password: {
+          object: string;
+          attributes: {
+            password: string;
+          };
+        };
+      };
+    };
+  }
+  
+
 /**
  * Creates a new database for a server.
  *
@@ -9,7 +33,7 @@ import ClientAPICall from "../../../../../functions/createAppCall";
  * @param {string} options.server_id - The ID of the server.
  * @param {string} options.database_name - The name of the database.
  * @param {string} [options.remote] - The allowed remote IP (default `%` for all).
- * @returns {Promise<any>} - API response confirming database creation.
+ * @returns {Promise<Response>} - API response confirming database creation.
  *
  * @throws {Error} - Throws an error if the API request fails.
  */
@@ -19,7 +43,7 @@ export default async function createDatabase(options: {
     server_id: string;
     database_name: string;
     remote?: string;
-}): Promise<any> {
+}): Promise<Response> {
     return ClientAPICall({
         apiKey: options.apiKey,
         panel: options.panel,
