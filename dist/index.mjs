@@ -906,11 +906,8 @@ async function writeFile(options) {
     apiKey: options.apiKey,
     panel: options.panel,
     method: "POST",
-    endpoint: `servers/${options.server_id}/files/write`,
-    body: JSON.stringify({
-      file: options.file_path,
-      contents: options.content
-    })
+    endpoint: `servers/${options.server_id}/files/write?file=${options.file_path}`,
+    body: options.content
   });
 }
 
