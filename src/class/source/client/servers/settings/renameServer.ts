@@ -1,4 +1,4 @@
-import ClientAPICall from "../../../../../functions/createAppCall";
+import ClientAPICall from "../../../../../functions/createClientCall";
 
 /**
  * Renames a server on the panel.

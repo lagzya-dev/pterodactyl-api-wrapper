@@ -1,4 +1,4 @@
-import ClientAPICall from "../../../../../functions/createAppCall";
+import ClientAPICall from "../../../../../functions/createClientCall";
 
 /**
  * Reinstalls a server, resetting its configuration while preserving files.

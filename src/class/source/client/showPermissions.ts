@@ -1,100 +1,99 @@
-import ClientAPICall from "../../../functions/createAppCall";
+import ClientAPICall from "../../../functions/createClientCall";
 
 export interface Response {
-    object: string;
-    attributes: {
-      permissions: {
-        websocket: {
-          description: string;
-          keys: {
-            connect: string;
-          };
+  object: string;
+  attributes: {
+    permissions: {
+      websocket: {
+        description: string;
+        keys: {
+          connect: string;
         };
-        control: {
-          description: string;
-          keys: {
-            console: string;
-            start: string;
-            stop: string;
-            restart: string;
-          };
+      };
+      control: {
+        description: string;
+        keys: {
+          console: string;
+          start: string;
+          stop: string;
+          restart: string;
         };
-        user: {
-          description: string;
-          keys: {
-            create: string;
-            read: string;
-            update: string;
-            delete: string;
-          };
+      };
+      user: {
+        description: string;
+        keys: {
+          create: string;
+          read: string;
+          update: string;
+          delete: string;
         };
-        file: {
-          description: string;
-          keys: {
-            create: string;
-            read: string;
-            update: string;
-            delete: string;
-            archive: string;
-            sftp: string;
-          };
+      };
+      file: {
+        description: string;
+        keys: {
+          create: string;
+          read: string;
+          update: string;
+          delete: string;
+          archive: string;
+          sftp: string;
         };
-        backup: {
-          description: string;
-          keys: {
-            create: string;
-            read: string;
-            update: string;
-            delete: string;
-            download: string;
-          };
+      };
+      backup: {
+        description: string;
+        keys: {
+          create: string;
+          read: string;
+          update: string;
+          delete: string;
+          download: string;
         };
-        allocation: {
-          description: string;
-          keys: {
-            read: string;
-            create: string;
-            update: string;
-            delete: string;
-          };
+      };
+      allocation: {
+        description: string;
+        keys: {
+          read: string;
+          create: string;
+          update: string;
+          delete: string;
         };
-        startup: {
-          description: string;
-          keys: {
-            read: string;
-            update: string;
-          };
+      };
+      startup: {
+        description: string;
+        keys: {
+          read: string;
+          update: string;
         };
-        database: {
-          description: string;
-          keys: {
-            create: string;
-            read: string;
-            update: string;
-            delete: string;
-            view_password: string;
-          };
+      };
+      database: {
+        description: string;
+        keys: {
+          create: string;
+          read: string;
+          update: string;
+          delete: string;
+          view_password: string;
         };
-        schedule: {
-          description: string;
-          keys: {
-            create: string;
-            read: string;
-            update: string;
-            delete: string;
-          };
+      };
+      schedule: {
+        description: string;
+        keys: {
+          create: string;
+          read: string;
+          update: string;
+          delete: string;
         };
-        settings: {
-          description: string;
-          keys: {
-            rename: string;
-            reinstall: string;
-          };
+      };
+      settings: {
+        description: string;
+        keys: {
+          rename: string;
+          reinstall: string;
         };
       };
     };
-  }
-  
+  };
+}
 
 /**
  * Retrieves the permissions the authenticated user has for a specific server.
@@ -107,15 +106,15 @@ export interface Response {
  *
  * @throws {Error} - Throws an error if the API request fails.
  */
-export default async function showPermissions(options: { 
-    apiKey: string; 
-    panel: string; 
-    server_id: string;
+export default async function showPermissions(options: {
+  apiKey: string;
+  panel: string;
+  server_id: string;
 }): Promise<Response> {
-    return ClientAPICall({
-        apiKey: options.apiKey,
-        panel: options.panel,
-        method: "GET",
-        endpoint: `servers/${options.server_id}/permissions`
-    });
+  return ClientAPICall({
+    apiKey: options.apiKey,
+    panel: options.panel,
+    method: "GET",
+    endpoint: `servers/${options.server_id}/permissions`,
+  });
 }

@@ -1,4 +1,4 @@
-import ClientAPICall from "../../../../functions/createAppCall";
+import ClientAPICall from "../../../../functions/createClientCall";
 
 /**
  * Updates the email address of the authenticated user.

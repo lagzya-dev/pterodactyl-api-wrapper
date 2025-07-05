@@ -1,4 +1,4 @@
-import ClientAPICall from "../../../../../functions/createAppCall";
+import ClientAPICall from "../../../../../functions/createClientCall";
 
 /**
  * Removes a user from a server.

@@ -1,4 +1,4 @@
-import ClientAPICall from "../../../../../functions/createAppCall";
+import ClientAPICall from "../../../../../functions/createClientCall";
 
 /**
  * Retrieves the content of a specific file on a server.

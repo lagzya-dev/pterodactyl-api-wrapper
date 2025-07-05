@@ -1,4 +1,4 @@
-import ClientAPICall from "../../../../functions/createAppCall";
+import ClientAPICall from "../../../../functions/createClientCall";
 
 /**
  * Deletes an API key for the authenticated user.

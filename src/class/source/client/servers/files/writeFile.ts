@@ -1,4 +1,4 @@
-import ClientAPICall from "../../../../../functions/createAppCall";
+import ClientAPICall from "../../../../../functions/createClientCall";
 
 /**
  * Writes content to a file on a server.
@@ -13,21 +13,21 @@ import ClientAPICall from "../../../../../functions/createAppCall";
  *
  * @throws {Error} - Throws an error if the API request fails.
  */
-export default async function writeFile(options: { 
-    apiKey: string; 
-    panel: string; 
-    server_id: string;
-    file_path: string;
-    content: string;
+export default async function writeFile(options: {
+  apiKey: string;
+  panel: string;
+  server_id: string;
+  file_path: string;
+  content: string;
 }): Promise<any> {
-    return ClientAPICall({
-        apiKey: options.apiKey,
-        panel: options.panel,
-        method: "POST",
-        endpoint: `servers/${options.server_id}/files/write`,
-        body: JSON.stringify({
-            file: options.file_path,
-            contents: options.content
-        })
-    });
+  return ClientAPICall({
+    apiKey: options.apiKey,
+    panel: options.panel,
+    method: "POST",
+    endpoint: `servers/${options.server_id}/files/write`,
+    body: JSON.stringify({
+      file: options.file_path,
+      contents: options.content,
+    }),
+  });
 }

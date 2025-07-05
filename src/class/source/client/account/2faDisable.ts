@@ -1,4 +1,4 @@
-import ClientAPICall from "../../../../functions/createAppCall";
+import ClientAPICall from "../../../../functions/createClientCall";
 
 /**
  * Disables Two-Factor Authentication (2FA) for the authenticated user.
