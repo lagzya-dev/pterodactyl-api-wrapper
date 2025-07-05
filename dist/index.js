@@ -609,9 +609,42 @@ var Application = class {
   }
 };
 
+// src/functions/createClientCall.ts
+var import_axios2 = __toESM(require("axios"));
+async function ClientAPICall(options) {
+  const url = `${options.panel}/api/client/${options.endpoint}`;
+  const headers = {
+    "Accept": "application/json",
+    "Content-Type": "application/json",
+    "Authorization": `Bearer ${options.apiKey}`
+  };
+  try {
+    if (["POST", "PUT", "PATCH"].includes(options.method)) {
+      const response = await (0, import_axios2.default)({
+        method: options.method,
+        url,
+        headers,
+        data: options.body ? JSON.stringify(options.body) : void 0
+      });
+      return response.data;
+    } else {
+      const response = await fetch(url, {
+        method: options.method,
+        headers
+      });
+      if (!response.ok) {
+        throw new Error(`API call failed with status ${response.status}: ${await response.text()}`);
+      }
+      return await response.json();
+    }
+  } catch (error) {
+    throw new Error(`Error in API call: ${error instanceof Error ? error.message : String(error)}`);
+  }
+}
+
 // src/class/source/client/account/accountDetails.ts
 async function accountDetails(options) {
-  return ApplicationAPICall({
+  return ClientAPICall({
     apiKey: options.apiKey,
     panel: options.panel,
     method: "GET",
@@ -621,7 +654,7 @@ async function accountDetails(options) {
 
 // src/class/source/client/account/2faEnable.ts
 async function twoFactorEnable(options) {
-  return ApplicationAPICall({
+  return ClientAPICall({
     apiKey: options.apiKey,
     panel: options.panel,
     method: "POST",
@@ -632,7 +665,7 @@ async function twoFactorEnable(options) {
 
 // src/class/source/client/account/2faDisable.ts
 async function twoFactorDisable(options) {
-  return ApplicationAPICall({
+  return ClientAPICall({
     apiKey: options.apiKey,
     panel: options.panel,
     method: "DELETE",
@@ -643,7 +676,7 @@ async function twoFactorDisable(options) {
 
 // src/class/source/client/account/updateEmail.ts
 async function updateEmail(options) {
-  return ApplicationAPICall({
+  return ClientAPICall({
     apiKey: options.apiKey,
     panel: options.panel,
     method: "PUT",
@@ -657,7 +690,7 @@ async function updateEmail(options) {
 
 // src/class/source/client/account/updatePassword.ts
 async function updatePassword(options) {
-  return ApplicationAPICall({
+  return ClientAPICall({
     apiKey: options.apiKey,
     panel: options.panel,
     method: "PUT",
@@ -671,7 +704,7 @@ async function updatePassword(options) {
 
 // src/class/source/client/account/createApiKey.ts
 async function createApiKey(options) {
-  return ApplicationAPICall({
+  return ClientAPICall({
     apiKey: options.apiKey,
     panel: options.panel,
     method: "POST",
@@ -685,7 +718,7 @@ async function createApiKey(options) {
 
 // src/class/source/client/account/deleteApiKey.ts
 async function deleteApiKey(options) {
-  return ApplicationAPICall({
+  return ClientAPICall({
     apiKey: options.apiKey,
     panel: options.panel,
     method: "DELETE",
@@ -695,7 +728,7 @@ async function deleteApiKey(options) {
 
 // src/class/source/client/account/listApiKeys.ts
 async function listApiKeys(options) {
-  return ApplicationAPICall({
+  return ClientAPICall({
     apiKey: options.apiKey,
     panel: options.panel,
     method: "GET",
@@ -705,7 +738,7 @@ async function listApiKeys(options) {
 
 // src/class/source/client/listServers.ts
 async function listServers2(options) {
-  return ApplicationAPICall({
+  return ClientAPICall({
     apiKey: options.apiKey,
     panel: options.panel,
     method: "GET",
@@ -715,7 +748,7 @@ async function listServers2(options) {
 
 // src/class/source/client/showPermissions.ts
 async function showPermissions(options) {
-  return ApplicationAPICall({
+  return ClientAPICall({
     apiKey: options.apiKey,
     panel: options.panel,
     method: "GET",
@@ -802,7 +835,7 @@ async function serverDetails2(options) {
 
 // src/class/source/client/servers/backups/listBackups.ts
 async function listBackups(options) {
-  return ApplicationAPICall({
+  return ClientAPICall({
     apiKey: options.apiKey,
     panel: options.panel,
     method: "GET",
@@ -812,7 +845,7 @@ async function listBackups(options) {
 
 // src/class/source/client/servers/backups/backupDetails.ts
 async function backupDetails(options) {
-  return ApplicationAPICall({
+  return ClientAPICall({
     apiKey: options.apiKey,
     panel: options.panel,
     method: "GET",
@@ -822,7 +855,7 @@ async function backupDetails(options) {
 
 // src/class/source/client/servers/backups/createBackup.ts
 async function createBackup(options) {
-  return ApplicationAPICall({
+  return ClientAPICall({
     apiKey: options.apiKey,
     panel: options.panel,
     method: "POST",
@@ -833,7 +866,7 @@ async function createBackup(options) {
 
 // src/class/source/client/servers/backups/deleteBackup.ts
 async function deleteBackup(options) {
-  return ApplicationAPICall({
+  return ClientAPICall({
     apiKey: options.apiKey,
     panel: options.panel,
     method: "DELETE",
@@ -843,7 +876,7 @@ async function deleteBackup(options) {
 
 // src/class/source/client/servers/backups/downloadBackup.ts
 async function downloadBackup(options) {
-  return ApplicationAPICall({
+  return ClientAPICall({
     apiKey: options.apiKey,
     panel: options.panel,
     method: "GET",
@@ -853,7 +886,7 @@ async function downloadBackup(options) {
 
 // src/class/source/client/servers/files/listFiles.ts
 async function listFiles(options) {
-  return ApplicationAPICall({
+  return ClientAPICall({
     apiKey: options.apiKey,
     panel: options.panel,
     method: "GET",
@@ -863,7 +896,7 @@ async function listFiles(options) {
 
 // src/class/source/client/servers/files/getFileContent.ts
 async function getFileContent(options) {
-  return ApplicationAPICall({
+  return ClientAPICall({
     apiKey: options.apiKey,
     panel: options.panel,
     method: "GET",
@@ -873,7 +906,7 @@ async function getFileContent(options) {
 
 // src/class/source/client/servers/files/downloadFile.ts
 async function downloadFile(options) {
-  return ApplicationAPICall({
+  return ClientAPICall({
     apiKey: options.apiKey,
     panel: options.panel,
     method: "GET",
@@ -883,7 +916,7 @@ async function downloadFile(options) {
 
 // src/class/source/client/servers/files/renameFile.ts
 async function renameFile(options) {
-  return ApplicationAPICall({
+  return ClientAPICall({
     apiKey: options.apiKey,
     panel: options.panel,
     method: "PUT",
@@ -894,7 +927,7 @@ async function renameFile(options) {
 
 // src/class/source/client/servers/files/copyFile.ts
 async function copyFile(options) {
-  return ApplicationAPICall({
+  return ClientAPICall({
     apiKey: options.apiKey,
     panel: options.panel,
     method: "POST",
@@ -905,7 +938,7 @@ async function copyFile(options) {
 
 // src/class/source/client/servers/files/writeFile.ts
 async function writeFile(options) {
-  return ApplicationAPICall({
+  return ClientAPICall({
     apiKey: options.apiKey,
     panel: options.panel,
     method: "POST",
@@ -919,7 +952,7 @@ async function writeFile(options) {
 
 // src/class/source/client/servers/files/compressFile.ts
 async function compressFile(options) {
-  return ApplicationAPICall({
+  return ClientAPICall({
     apiKey: options.apiKey,
     panel: options.panel,
     method: "POST",
@@ -930,7 +963,7 @@ async function compressFile(options) {
 
 // src/class/source/client/servers/files/decompressFile.ts
 async function decompressFile(options) {
-  return ApplicationAPICall({
+  return ClientAPICall({
     apiKey: options.apiKey,
     panel: options.panel,
     method: "POST",
@@ -941,7 +974,7 @@ async function decompressFile(options) {
 
 // src/class/source/client/servers/files/deleteFile.ts
 async function deleteFile(options) {
-  return ApplicationAPICall({
+  return ClientAPICall({
     apiKey: options.apiKey,
     panel: options.panel,
     method: "POST",
@@ -952,7 +985,7 @@ async function deleteFile(options) {
 
 // src/class/source/client/servers/files/createFolder.ts
 async function createFolder(options) {
-  return ApplicationAPICall({
+  return ClientAPICall({
     apiKey: options.apiKey,
     panel: options.panel,
     method: "POST",
@@ -962,9 +995,9 @@ async function createFolder(options) {
 }
 
 // src/class/source/client/servers/files/uploadFile.ts
-var import_axios2 = __toESM(require("axios"));
+var import_axios3 = __toESM(require("axios"));
 async function uploadFile(options) {
-  const response = await import_axios2.default.post(
+  const response = await import_axios3.default.post(
     `${options.panel}/api/client/servers/${options.server_id}/files/upload`,
     options.file_data,
     {
@@ -979,7 +1012,7 @@ async function uploadFile(options) {
 
 // src/class/source/client/servers/network/listAllocations.ts
 async function listAllocations2(options) {
-  return ApplicationAPICall({
+  return ClientAPICall({
     apiKey: options.apiKey,
     panel: options.panel,
     method: "GET",
@@ -989,7 +1022,7 @@ async function listAllocations2(options) {
 
 // src/class/source/client/servers/network/assignAllocations.ts
 async function assignAllocations(options) {
-  return ApplicationAPICall({
+  return ClientAPICall({
     apiKey: options.apiKey,
     panel: options.panel,
     method: "POST",
@@ -1000,7 +1033,7 @@ async function assignAllocations(options) {
 
 // src/class/source/client/servers/network/setAllocationNote.ts
 async function setAllocationNote(options) {
-  return ApplicationAPICall({
+  return ClientAPICall({
     apiKey: options.apiKey,
     panel: options.panel,
     method: "PUT",
@@ -1011,7 +1044,7 @@ async function setAllocationNote(options) {
 
 // src/class/source/client/servers/network/setPrimaryAllocation.ts
 async function setPrimaryAllocation(options) {
-  return ApplicationAPICall({
+  return ClientAPICall({
     apiKey: options.apiKey,
     panel: options.panel,
     method: "POST",
@@ -1021,7 +1054,7 @@ async function setPrimaryAllocation(options) {
 
 // src/class/source/client/servers/network/unassignAllocation.ts
 async function unassignAllocation(options) {
-  return ApplicationAPICall({
+  return ClientAPICall({
     apiKey: options.apiKey,
     panel: options.panel,
     method: "DELETE",
@@ -1158,7 +1191,7 @@ async function deleteTask(options) {
 
 // src/class/source/client/servers/settings/renameServer.ts
 async function renameServer(options) {
-  return ApplicationAPICall({
+  return ClientAPICall({
     apiKey: options.apiKey,
     panel: options.panel,
     method: "PATCH",
@@ -1169,7 +1202,7 @@ async function renameServer(options) {
 
 // src/class/source/client/servers/settings/reinstallServer.ts
 async function reinstallServer2(options) {
-  return ApplicationAPICall({
+  return ClientAPICall({
     apiKey: options.apiKey,
     panel: options.panel,
     method: "POST",
@@ -1179,7 +1212,7 @@ async function reinstallServer2(options) {
 
 // src/class/source/client/servers/startup/listVariables.ts
 async function listVariables(options) {
-  return ApplicationAPICall({
+  return ClientAPICall({
     apiKey: options.apiKey,
     panel: options.panel,
     method: "GET",
@@ -1189,7 +1222,7 @@ async function listVariables(options) {
 
 // src/class/source/client/servers/startup/updateVariable.ts
 async function updateVariable(options) {
-  return ApplicationAPICall({
+  return ClientAPICall({
     apiKey: options.apiKey,
     panel: options.panel,
     method: "PUT",
@@ -1200,7 +1233,7 @@ async function updateVariable(options) {
 
 // src/class/source/client/servers/users/listUsers.ts
 async function listUsers2(options) {
-  return ApplicationAPICall({
+  return ClientAPICall({
     apiKey: options.apiKey,
     panel: options.panel,
     method: "GET",
@@ -1210,7 +1243,7 @@ async function listUsers2(options) {
 
 // src/class/source/client/servers/users/createUser.ts
 async function createUser2(options) {
-  return ApplicationAPICall({
+  return ClientAPICall({
     apiKey: options.apiKey,
     panel: options.panel,
     method: "POST",
@@ -1225,7 +1258,7 @@ async function createUser2(options) {
 
 // src/class/source/client/servers/users/updateUser.ts
 async function updateUser2(options) {
-  return ApplicationAPICall({
+  return ClientAPICall({
     apiKey: options.apiKey,
     panel: options.panel,
     method: "PUT",
@@ -1236,7 +1269,7 @@ async function updateUser2(options) {
 
 // src/class/source/client/servers/users/deleteUser.ts
 async function deleteUser2(options) {
-  return ApplicationAPICall({
+  return ClientAPICall({
     apiKey: options.apiKey,
     panel: options.panel,
     method: "DELETE",
@@ -1246,7 +1279,7 @@ async function deleteUser2(options) {
 
 // src/class/source/client/servers/users/userDetails.ts
 async function userDetails2(options) {
-  return ApplicationAPICall({
+  return ClientAPICall({
     apiKey: options.apiKey,
     panel: options.panel,
     method: "GET",
