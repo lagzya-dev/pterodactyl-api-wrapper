@@ -738,7 +738,7 @@ async function listApiKeys(options) {
 
 // src/class/source/client/listServers.ts
 async function listServers2(options) {
-  return ClientAPICall({
+  return ApplicationAPICall({
     apiKey: options.apiKey,
     panel: options.panel,
     method: "GET",

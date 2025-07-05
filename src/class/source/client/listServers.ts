@@ -1,4 +1,4 @@
-import ClientAPICall from "../../../functions/createClientCall";
+import ClientAPICall from "../../../functions/createAppCall";
 
 export interface Response {
     object: string;
