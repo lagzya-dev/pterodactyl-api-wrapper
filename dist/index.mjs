@@ -1193,7 +1193,7 @@ async function updateVariable(options) {
     panel: options.panel,
     method: "PUT",
     endpoint: `servers/${options.server_id}/startup/variable`,
-    body: JSON.stringify({ key: options.variable_id, value: options.value })
+    body: { key: options.variable_id, value: options.value }
   });
 }
 
@@ -1342,7 +1342,7 @@ var Client = class {
         apiKey: this.apiKey,
         panel: this.panel,
         server_id,
-        variable_id: parseInt(variable_id),
+        variable_id,
         value
       })
     };

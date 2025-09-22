@@ -31,7 +31,7 @@ export default async function updateVariable(options: {
     apiKey: string; 
     panel: string; 
     server_id: string;
-    variable_id: number;
+    variable_id: string;
     value: string;
 }): Promise<Response> {
     return ClientAPICall({
@@ -39,6 +39,6 @@ export default async function updateVariable(options: {
         panel: options.panel,
         method: "PUT",
         endpoint: `servers/${options.server_id}/startup/variable`,
-        body: JSON.stringify({ key: options.variable_id, value: options.value })
+        body: { key: options.variable_id, value: options.value }
     });
 }

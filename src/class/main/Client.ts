@@ -184,7 +184,7 @@ export default class Client {
             apiKey: this.apiKey, 
             panel: this.panel, 
             server_id, 
-            variable_id: parseInt(variable_id), 
+            variable_id: variable_id, 
             value 
         }),        
     };
