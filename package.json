@@ -1,6 +1,6 @@
 {
   "name": "pterodactyl-api-wrapper",
-  "version": "2.0.11",
+  "version": "2.0.16",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "scripts": {
@@ -14,7 +14,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/cptcr/pterodactyl-api-wrapper.git"
+    "url": "https://github.com/lagzya-dev/pterodactyl-api-wrapper.git"
   },
   "keywords": [
     "pterodactyl",
@@ -28,10 +28,10 @@
   ],
   "license": "Apache-2.0",
   "bugs": {
-    "url": "https://github.com/cptcr/pterodactyl-api-wrapper/issues"
+    "url": "https://github.com/lagzya-dev/pterodactyl-api-wrapper/issues"
   },
-  "homepage": "https://github.com/cptcr/pterodactyl-api-wrapper#readme",
-  "author": "cptcr",
+  "homepage": "https://github.com/lagzya-dev/pterodactyl-api-wrapper#readme",
+  "author": "lagzya-dev",
   "description": "",
   "dependencies": {
     "@types/axios": "^0.9.36",
