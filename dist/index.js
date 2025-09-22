@@ -641,7 +641,7 @@ async function ClientAPICall(options) {
       return await response.json();
     }
   } catch (error) {
-    console.log(error);
+    console.log(error.request.data);
     throw new Error(
       `Error in API call: ${error instanceof Error ? error.message : String(error)}`
     );
