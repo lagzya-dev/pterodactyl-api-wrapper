@@ -641,6 +641,7 @@ async function ClientAPICall(options) {
       return await response.json();
     }
   } catch (error) {
+    console.log(error);
     throw new Error(
       `Error in API call: ${error instanceof Error ? error.message : String(error)}`
     );
@@ -981,7 +982,7 @@ async function deleteFile(options) {
     panel: options.panel,
     method: "POST",
     endpoint: `servers/${options.server_id}/files/delete`,
-    body: JSON.stringify({ files: options.files })
+    body: JSON.stringify({ root: options.root, files: options.files })
   });
 }
 
@@ -1400,7 +1401,7 @@ var Client = class {
       write: (server_id, file_path, content) => writeFile({ apiKey: this.apiKey, panel: this.panel, server_id, file_path, content }),
       compress: (server_id, files) => compressFile({ apiKey: this.apiKey, panel: this.panel, server_id, files }),
       decompress: (server_id, file_path) => decompressFile({ apiKey: this.apiKey, panel: this.panel, server_id, file_path }),
-      delete: (server_id, files) => deleteFile({ apiKey: this.apiKey, panel: this.panel, server_id, files }),
+      delete: (server_id, files, root) => deleteFile({ apiKey: this.apiKey, panel: this.panel, server_id, files, root }),
       createFolder: (server_id, folder_path) => createFolder({ apiKey: this.apiKey, panel: this.panel, server_id, folder_path }),
       upload: (server_id, file_data) => uploadFile({ apiKey: this.apiKey, panel: this.panel, server_id, file_data })
     };

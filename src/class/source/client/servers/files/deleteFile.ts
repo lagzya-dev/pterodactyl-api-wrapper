@@ -24,6 +24,6 @@ export default async function deleteFile(options: {
         panel: options.panel,
         method: "POST",
         endpoint: `servers/${options.server_id}/files/delete`,
-        body: JSON.stringify({ files: options.files, root: options.root })
+        body: JSON.stringify({ root: options.root, files: options.files })
     });
 }

@@ -1699,7 +1699,7 @@ declare class Client {
         write: (server_id: string, file_path: string, content: string) => Promise<any>;
         compress: (server_id: string, files: string[]) => Promise<Response$v>;
         decompress: (server_id: string, file_path: string) => Promise<any>;
-        delete: (server_id: string, files: string[]) => Promise<any>;
+        delete: (server_id: string, files: string[], root: string) => Promise<any>;
         createFolder: (server_id: string, folder_path: string) => Promise<any>;
         upload: (server_id: string, file_data: FormData) => Promise<Response$w>;
     };
