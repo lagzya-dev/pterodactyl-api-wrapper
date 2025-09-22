@@ -211,7 +211,7 @@ export default class Client {
         write: (server_id: string, file_path: string, content: string) => writeFile({ apiKey: this.apiKey, panel: this.panel, server_id, file_path, content }),
         compress: (server_id: string, files: string[]) => compressFile({ apiKey: this.apiKey, panel: this.panel, server_id, files }),
         decompress: (server_id: string, file_path: string) => decompressFile({ apiKey: this.apiKey, panel: this.panel, server_id, file_path }),
-        delete: (server_id: string, files: string[]) => deleteFile({ apiKey: this.apiKey, panel: this.panel, server_id, files }),
+        delete: (server_id: string, files: string[], root: string) => deleteFile({ apiKey: this.apiKey, panel: this.panel, server_id, files, root }),
         createFolder: (server_id: string, folder_path: string) => createFolder({ apiKey: this.apiKey, panel: this.panel, server_id, folder_path }),
         upload: (server_id: string, file_data: FormData) => uploadFile({ apiKey: this.apiKey, panel: this.panel, server_id, file_data }),
     };

@@ -17,12 +17,13 @@ export default async function deleteFile(options: {
     panel: string; 
     server_id: string;
     files: string[];
+    root: string;
 }): Promise<any> {
     return ClientAPICall({
         apiKey: options.apiKey,
         panel: options.panel,
         method: "POST",
         endpoint: `servers/${options.server_id}/files/delete`,
-        body: JSON.stringify({ files: options.files })
+        body: JSON.stringify({ files: options.files, root: options.root })
     });
 }
