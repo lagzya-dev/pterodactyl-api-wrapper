@@ -577,10 +577,11 @@ var Application = class {
 import axios2 from "axios";
 async function ClientAPICall(options) {
   const url = `${options.panel}/api/client/${options.endpoint}`;
+  const isFileWrite = options.endpoint.includes("/files/write");
   const headers = {
-    "Accept": "application/json",
-    "Content-Type": "application/json",
-    "Authorization": `Bearer ${options.apiKey}`
+    Accept: "application/json",
+    "Content-Type": isFileWrite ? "text/plain" : "application/json",
+    Authorization: `Bearer ${options.apiKey}`
   };
   try {
     if (["POST", "PUT", "PATCH"].includes(options.method)) {
@@ -588,7 +589,7 @@ async function ClientAPICall(options) {
         method: options.method,
         url,
         headers,
-        data: options.body ? JSON.stringify(options.body) : void 0
+        data: isFileWrite ? options.body : options.body ? JSON.stringify(options.body) : void 0
       });
       return response.data;
     } else {
@@ -597,12 +598,16 @@ async function ClientAPICall(options) {
         headers
       });
       if (!response.ok) {
-        throw new Error(`API call failed with status ${response.status}: ${await response.text()}`);
+        throw new Error(
+          `API call failed with status ${response.status}: ${await response.text()}`
+        );
       }
       return await response.json();
     }
   } catch (error) {
-    throw new Error(`Error in API call: ${error instanceof Error ? error.message : String(error)}`);
+    throw new Error(
+      `Error in API call: ${error instanceof Error ? error.message : String(error)}`
+    );
   }
 }
 
