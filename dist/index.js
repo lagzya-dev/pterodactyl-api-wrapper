@@ -1218,7 +1218,7 @@ async function listVariables(options) {
     apiKey: options.apiKey,
     panel: options.panel,
     method: "GET",
-    endpoint: `servers/${options.server_id}/startup/variables`
+    endpoint: `servers/${options.server_id}/startup`
   });
 }
 
@@ -1228,8 +1228,8 @@ async function updateVariable(options) {
     apiKey: options.apiKey,
     panel: options.panel,
     method: "PUT",
-    endpoint: `servers/${options.server_id}/startup/variables/${options.variable_id}`,
-    body: JSON.stringify({ value: options.value })
+    endpoint: `servers/${options.server_id}/startup/variable`,
+    body: JSON.stringify({ key: options.variable_id, value: options.value })
   });
 }
 

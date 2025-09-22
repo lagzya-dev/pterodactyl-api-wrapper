@@ -41,6 +41,6 @@ export default async function listVariables(options: {
         apiKey: options.apiKey,
         panel: options.panel,
         method: "GET",
-        endpoint: `servers/${options.server_id}/startup/variables`
+        endpoint: `servers/${options.server_id}/startup`
     });
 }
