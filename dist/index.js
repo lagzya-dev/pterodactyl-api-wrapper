@@ -641,7 +641,6 @@ async function ClientAPICall(options) {
       return await response.json();
     }
   } catch (error) {
-    console.log(error.request.data);
     throw new Error(
       `Error in API call: ${error instanceof Error ? error.message : String(error)}`
     );
@@ -982,7 +981,7 @@ async function deleteFile(options) {
     panel: options.panel,
     method: "POST",
     endpoint: `servers/${options.server_id}/files/delete`,
-    body: JSON.stringify({ root: options.root, files: options.files })
+    body: { root: options.root, files: options.files }
   });
 }
 

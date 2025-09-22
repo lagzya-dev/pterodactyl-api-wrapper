@@ -60,7 +60,6 @@ export default async function ClientAPICall(options: {
       return await response.json();
     }
   } catch (error) {
-    console.log(error, error.response.data)
     throw new Error(
       `Error in API call: ${
         error instanceof Error ? error.message : String(error)
